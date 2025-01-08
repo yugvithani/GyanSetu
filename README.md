@@ -1,2 +1,2 @@
-# KnowledgeBridge
-KnowledgeBridge - Group Study Platform
+# GyanSetu
+GyanSetu - Group Study Platform
