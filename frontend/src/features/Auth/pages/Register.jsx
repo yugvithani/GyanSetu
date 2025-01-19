@@ -8,12 +8,14 @@ import BASE_URL from "../../../config";
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
   const [errors, setErrors] = useState({
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -30,6 +32,11 @@ const Register = () => {
   const validateForm = () => {
     const newErrors = {};
     let isValid = true;
+
+    if (!formData.name) {
+      newErrors.name = "Name is required";
+      isValid = false;
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) {
@@ -68,6 +75,7 @@ const Register = () => {
 
       try {
         const response = await axios.post(`${BASE_URL}/auth/register`, {
+          name: formData.name,
           email: formData.email,
           password: formData.password,
         });
@@ -110,6 +118,18 @@ const Register = () => {
           Create Your Account
         </h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
+        <div>
+            <label className="block text-gray-700 font-medium mb-2">Name</label>
+            <input
+              type="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#124E66] focus:border-transparent"
+              placeholder="Enter your Full Name"
+            />
+            {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+          </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Email</label>
             <input

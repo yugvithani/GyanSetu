@@ -1,5 +1,9 @@
 import React from "react";
-import { FiHome, FiSettings, FiMessageSquare, FiActivity, FiUser } from "react-icons/fi";
+import SideBar from "../components/SideBar";
+import SearchBar from "../components/SearchBar";
+import UserProfile from "../components/UserProfile";
+import CircleList from "../components/CircleList";
+import RecentActivity from "../components/RecentActivity"
 
 const HomePage = () => {
   return (
@@ -11,80 +15,22 @@ const HomePage = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-blue-100 rounded-full opacity-40 blur-2xl"></div>
       </div>
 
-      {/* Left Sidebar */}
-      <aside className="w-16 flex flex-col items-center py-6 bg-white shadow-lg rounded-r-3xl mt-10 mb-10">
-        {[
-          { icon: <FiHome />, label: "Home" },
-          { icon: <FiMessageSquare />, label: "Messages" },
-          { icon: <FiActivity />, label: "Activity" },
-          { icon: <FiSettings />, label: "Settings" },
-        ].map((item, index) => (
-          <div key={index} className="relative group my-3">
-            <div className="text-2xl p-3 bg-blue-500 text-white rounded-full cursor-pointer hover:bg-blue-600">
-              {item.icon}
-            </div>
-            <span className="absolute left-16 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-blue-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all">
-              {item.label}
-            </span>
-          </div>
-        ))}
-      </aside>
+      <SideBar/>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col px-6 py-4">
         {/* Top Section */}
         <header className="flex items-center justify-between">
-          {/* Search Button */}
-          <div className="flex-1 flex justify-center">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-1/2 px-4 py-2 rounded-full shadow-md focus:outline-none focus:ring focus:ring-blue-100"
-            />
-          </div>
+          <SearchBar/>
 
-          {/* Profile Icon */}
-          <div className="relative group">
-            <div className="text-2xl p-3 bg-blue-500 text-white rounded-full cursor-pointer hover:bg-blue-600">
-              <FiUser />
-            </div>
-            <span className="absolute right-16 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-blue-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all">
-              Profile
-            </span>
-          </div>
+          <UserProfile/>
         </header>
 
         {/* Center Content */}
         <main className="flex flex-1 mt-8 space-x-6">
-          {/* Groups List */}
-          <div className="flex-1 bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-blue-600">Your Groups</h2>
-            <ul className="mt-6 space-y-4">
-              {["Group 1", "Group 2", "Group 3"].map((group, index) => (
-                <li
-                  key={index}
-                  className="bg-blue-50 p-4 rounded-lg text-blue-600 shadow hover:shadow-lg transition-all"
-                >
-                  {group}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <CircleList/>
 
-          {/* Recent Activities */}
-          <div className="w-1/3 bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-blue-600">Recent Activities</h2>
-            <ul className="mt-6 space-y-4">
-              {["Activity 1", "Activity 2", "Activity 3"].map((activity, index) => (
-                <li
-                  key={index}
-                  className="bg-blue-50 p-4 rounded-lg text-blue-600 shadow hover:shadow-lg transition-all"
-                >
-                  {activity}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <RecentActivity/>
         </main>
       </div>
     </div>
