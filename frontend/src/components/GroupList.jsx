@@ -1,6 +1,6 @@
 import React from 'react'
 
-function CircleList() {
+function GroupList() {
   return (
     <div className="flex-1 bg-white rounded-2xl shadow-md p-6">
             <h2 className="text-lg font-semibold text-blue-600">Your Groups</h2>
@@ -18,4 +18,4 @@ function CircleList() {
   )
 }
 
-export default CircleList;
+export default GroupList;

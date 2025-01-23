@@ -2,7 +2,7 @@ import React from "react";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
 import UserProfile from "../components/UserProfile";
-import CircleList from "../components/CircleList";
+import GroupList from "../components/GroupList";
 import RecentActivity from "../components/RecentActivity"
 
 const HomePage = () => {
@@ -28,7 +28,7 @@ const HomePage = () => {
 
         {/* Center Content */}
         <main className="flex flex-1 mt-8 space-x-6">
-          <CircleList/>
+          <GroupList/>
 
           <RecentActivity/>
         </main>
