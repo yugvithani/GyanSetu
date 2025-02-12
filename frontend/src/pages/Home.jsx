@@ -1,11 +1,13 @@
 import React from "react";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
-import UserProfile from "../components/UserProfile";
+import { FiUser } from "react-icons/fi";
 import GroupList from "../components/GroupList";
-import RecentActivity from "../components/RecentActivity"
+import RecentActivity from "../components/RecentActivity";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex relative">
       {/* Gradient Background */}
@@ -22,8 +24,14 @@ const HomePage = () => {
         {/* Top Section */}
         <header className="flex items-center justify-between">
           <SearchBar/>
-
-          <UserProfile/>
+          <div className="relative group">
+              <div className="text-2xl p-3 bg-blue-500 text-white rounded-full cursor-pointer hover:bg-blue-600"  onClick={() => navigate('/profile')}>
+                  <FiUser />
+              </div>
+              <span className="absolute right-16 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-blue-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all">
+                  Profile
+              </span>
+          </div>
         </header>
 
         {/* Center Content */}
