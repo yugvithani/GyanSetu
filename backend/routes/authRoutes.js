@@ -11,4 +11,6 @@ router.post('/login', login);
 // Protected routes
 router.get('/profile', verifyToken, getProfile);
 
+// Admin routes
+
 module.exports = router;
