@@ -4,7 +4,7 @@ require('dotenv').config();
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes'); 
 const userRoutes = require('./routes/userRoutes');
-
+const groupRoutes = require('./routes/groupRoutes'); 
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -21,7 +21,7 @@ mongoose
 // Use Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes)
-
+app.use('/api/groups', groupRoutes);
 // Start the Server
 app.listen(
   PORT, 

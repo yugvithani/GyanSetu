@@ -83,7 +83,7 @@ const Register = () => {
 
         // Save the token and redirect to home
         localStorage.setItem("token", token);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        axios.defaults.headers.common["authorization"] = `Bearer ${token}`;
         toast.update(toastId, {
           render: "Registration Successfull!",
           type: "success",
