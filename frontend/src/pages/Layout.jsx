@@ -5,7 +5,7 @@ import { FiUser } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
 const Layout = ({ children }) => {
-  
+
   const navigate = useNavigate();
   return (
     <div className="min-h-screen flex relative">
@@ -16,27 +16,28 @@ const Layout = ({ children }) => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-blue-100 rounded-full opacity-40 blur-2xl"></div>
       </div>
 
-      <SideBar/>
+      <SideBar />
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col px-6 py-4">
         {/* Top Section */}
         <header className="flex items-center justify-between">
-          <SearchBar/>
+          <SearchBar />
           <div className="relative group">
-              <div className="text-2xl p-3 bg-blue-500 text-white rounded-full cursor-pointer hover:bg-blue-600"  onClick={() => navigate('/profile')}>
-                  <FiUser />
-              </div>
-              <span className="absolute right-16 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-blue-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all">
-                  Profile
-              </span>
+            <div className="text-2xl p-3 bg-blue-500 text-white rounded-full cursor-pointer hover:bg-blue-600" onClick={() => navigate('/profile')}>
+              <FiUser />
+            </div>
+            <span className="absolute right-16 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-blue-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all">
+              Profile
+            </span>
           </div>
         </header>
 
         {/* Dynamic Content */}
-        <main className="flex flex-1 mt-8 space-x-6">
-          {children}
-        </main>
+        {/* <main className="mt-8 space-x-6">
+          
+        </main> */}
+        {children}
       </div>
     </div>
   );
