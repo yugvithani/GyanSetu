@@ -85,7 +85,7 @@ const Register = () => {
         localStorage.setItem("token", token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         toast.update(toastId, {
-          render: "Registration Successful!",
+          render: "Registration Successfull!",
           type: "success",
           isLoading: false,
           autoClose: 3000,
