@@ -23,7 +23,11 @@ exports.register = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    res.status(201).json({ message: 'User registered successfully.' });
+    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
+    res.status(201).json({
+      message: 'User registered successfully.',
+      token,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error.' });
@@ -55,20 +59,6 @@ exports.login = async (req, res) => {
       message: 'Login successful.',
       token,
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error.' });
-  }
-};
-
-// Get user profile
-exports.getProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-    res.status(200).json(user);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error.' });

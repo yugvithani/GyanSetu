@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes'); 
+const userRoutes = require('./routes/userRoutes');
 const groupRoutes = require('./routes/groupRoutes'); 
 const app = express();
 app.use(cors());
@@ -19,6 +20,10 @@ mongoose
 
 // Use Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes)
 app.use('/api/groups', groupRoutes);
 // Start the Server
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(
+  PORT, 
+  () => console.log(`Server running on http://localhost:${PORT}`)
+);
