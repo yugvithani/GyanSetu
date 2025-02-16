@@ -85,21 +85,33 @@ const Register = () => {
         localStorage.setItem("token", token);
         axios.defaults.headers.common["authorization"] = `Bearer ${token}`;
         toast.update(toastId, {
-          render: "Registration Successfull!",
+          render: "Register successfully!",
           type: "success",
           isLoading: false,
           autoClose: 3000,
-          theme: "dark",
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          position: "top-center",
+          theme: "light",
+          style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
         });
 
         navigate("/home"); // Redirect to the home page
       } catch (error) {
         toast.update(toastId, {
-          render: error.response?.data?.message || "Registration failed!",
+          render: error.response?.data?.error || "Error in Register",
           type: "error",
           isLoading: false,
           autoClose: 3000,
-          theme: "dark",
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          position: "top-center",
+          theme: "light",
+          style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
         });
       }
     } else {

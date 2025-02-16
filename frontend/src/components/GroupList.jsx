@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaPlus } from "react-icons/fa";
-import {BASE_URL} from "../config";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import BASE_URL from "../config";
+
 const GroupList = () => {
   const [showForm, setShowForm] = useState(false);
   const [groupData, setGroupData] = useState({
@@ -16,12 +19,21 @@ const GroupList = () => {
     const fetchGroups = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`${BASE_URL}/groups/`, {
+        const response = await axios.get(`${BASE_URL}/groups/all`, {
           headers: { authorization: `Bearer ${token}` },
         });
         setGroups(response.data);
       } catch (error) {
-        console.error("Error fetching groups:", error);
+        toast.error(error.response?.data?.error || "Error fetching groups", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          theme: "light",
+          style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
+        });
       } finally {
         setLoading(false);
       }
@@ -39,6 +51,7 @@ const GroupList = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Creating group...", { position: "top-center" });
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
@@ -46,15 +59,41 @@ const GroupList = () => {
         groupData,
         { headers: { authorization: `Bearer ${token}` } }
       );
-      setGroups([...groups, response.data]); // Add new group instantly
+      setGroups([...groups, response.data]);
       setShowForm(false);
+      toast.update(toastId, {
+        render: "Group created successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        position: "top-center",
+        theme: "light",
+        style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
+      });
     } catch (error) {
-      alert(error.response?.data?.error || "Error creating group");
+      toast.update(toastId, {
+        render: error.response?.data?.error || "Error creating group",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        position: "top-center",
+        theme: "light",
+        style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
+      });
     }
   };
 
   return (
     <div className="flex-1 bg-white rounded-2xl shadow-md p-6">
+      <ToastContainer />
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-blue-600">Your Groups</h2>
         <button
@@ -72,7 +111,7 @@ const GroupList = () => {
           No groups available
         </div>
       ) : (
-        <ul className="mt-6 space-y-4">
+        <ul className="mt-6 space-y-4 overflow-y-auto flex-1 max-h-[650px]">
           {groups.map((group, index) => (
             <li
               key={index}
