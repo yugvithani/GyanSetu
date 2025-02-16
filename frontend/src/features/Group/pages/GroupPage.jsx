@@ -8,7 +8,7 @@ const GroupPage = () => {
   return (
     <main className="flex flex-1 mt-8 ">
       {/* Main Container (Fixed Height) */}
-      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col">
+      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
         {/* Toggle Buttons */}
         <div className="flex space-x-6 p-2 bg-gray-200 rounded-full mx-auto w-max">
           <button

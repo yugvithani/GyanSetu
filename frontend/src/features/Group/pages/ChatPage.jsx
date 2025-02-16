@@ -55,7 +55,7 @@ const ChatPage = () => {
       })
       .catch((error) => console.error("Error fetching messages:", error));
   }, [groupId]);
-
+  
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
