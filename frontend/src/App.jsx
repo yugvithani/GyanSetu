@@ -15,7 +15,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Layout><Home /></Layout>} />
         <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
-        <Route path="/group/:id" element={<Layout><GroupPage /></Layout>} />
+        <Route path="/group/:groupId" element={<Layout><GroupPage /></Layout>} />
 
       </Routes>
     </Router>

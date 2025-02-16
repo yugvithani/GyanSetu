@@ -9,7 +9,7 @@ exports.getProfile = async (req, res) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token
-    const user = await User.findById(decoded.id).select("-password"); // Find user
+    const user = await User.findById(req.user.id).select("-password"); // Find user
 
     if (!user) {
       return res.status(404).json({ message: "User not found." });
@@ -20,3 +20,7 @@ exports.getProfile = async (req, res) => {
     res.status(500).json({ message: "Server error." });
   }
 };
+
+exports.getUserId=async(req, res)=>{
+  res.status(200).json(req.user.id);
+}
