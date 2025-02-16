@@ -6,9 +6,9 @@ const GroupPage = () => {
   const [activeSection, setActiveSection] = useState("chat");
 
   return (
-    <main className="flex flex-1 mt-8 space-x-6">
-      {/* Main Container */}
-      <div className="flex-1 h-[90vh] bg-gray-50 rounded-3xl shadow-2xl p-6 border border-gray-300 flex flex-col">
+    <main className="flex flex-1 mt-8 ">
+      {/* Main Container (Fixed Height) */}
+      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col">
         {/* Toggle Buttons */}
         <div className="flex space-x-6 p-2 bg-gray-200 rounded-full mx-auto w-max">
           <button
@@ -33,10 +33,12 @@ const GroupPage = () => {
           </button>
         </div>
 
-        {/* Content Section (Fixed Height with Scroll) */}
-        <div className="flex-1 mt-6 overflow-y-auto">
-          {activeSection === "chat" && <ChatPage />}
-          {activeSection === "material" && <MaterialPage />}
+        {/* Content Section (Scrollable Inner Pages, Fixed Parent) */}
+        <div className="flex-1 mt-6 overflow-hidden">
+          <div className="h-full overflow-y-auto">
+            {activeSection === "chat" && <ChatPage />}
+            {activeSection === "material" && <MaterialPage />}
+          </div>
         </div>
       </div>
     </main>

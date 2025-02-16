@@ -2,10 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const cors = require('cors');
+const http = require('http');
+const { initializeSocket } = require('./socket'); 
 const authRoutes = require('./routes/authRoutes'); 
 const userRoutes = require('./routes/userRoutes');
-const groupRoutes = require('./routes/groupRoutes'); 
+const groupRoutes = require('./routes/groupRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+
 const app = express();
+const server = http.createServer(app); 
+
 app.use(cors());
 app.use(express.json());
 
@@ -20,10 +26,11 @@ mongoose
 
 // Use Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes)
+app.use('/api/user', userRoutes);
 app.use('/api/groups', groupRoutes);
-// Start the Server
-app.listen(
-  PORT, 
-  () => console.log(`Server running on http://localhost:${PORT}`)
-);
+app.use('/api/chat', chatRoutes);
+
+// Initialize Socket.io
+initializeSocket(server);
+
+server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
