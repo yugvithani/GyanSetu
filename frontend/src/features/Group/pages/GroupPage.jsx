@@ -1,46 +1,45 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
 import ChatPage from "./ChatPage";
 import MaterialPage from "./MaterialPage";
 
 const GroupPage = () => {
-  const { groupId } = useParams();
-  const [activeTab, setActiveTab] = useState("chat");
+  const [activeSection, setActiveSection] = useState("chat");
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Group Header */}
-      <div className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold text-gray-800">Group {groupId}</h1>
-        <div className="flex space-x-4">
+    <main className="flex flex-1 mt-8 space-x-6">
+      {/* Main Container */}
+      <div className="flex-1 h-[90vh] bg-gray-50 rounded-3xl shadow-2xl p-6 border border-gray-300 flex flex-col">
+        {/* Toggle Buttons */}
+        <div className="flex space-x-6 p-2 bg-gray-200 rounded-full mx-auto w-max">
           <button
-            className={`px-4 py-2 text-sm font-medium transition ${
-              activeTab === "chat"
-                ? "border-b-4 border-blue-500 text-blue-500"
-                : "text-gray-500 hover:text-gray-800"
+            onClick={() => setActiveSection("chat")}
+            className={`px-6 py-2 text-lg font-semibold rounded-full transition-all duration-300 ${
+              activeSection === "chat"
+                ? "bg-blue-600 text-white shadow-md"
+                : "text-gray-500 hover:text-blue-600"
             }`}
-            onClick={() => setActiveTab("chat")}
           >
             Chat
           </button>
           <button
-            className={`px-4 py-2 text-sm font-medium transition ${
-              activeTab === "material"
-                ? "border-b-4 border-blue-500 text-blue-500"
-                : "text-gray-500 hover:text-gray-800"
+            onClick={() => setActiveSection("material")}
+            className={`px-6 py-2 text-lg font-semibold rounded-full transition-all duration-300 ${
+              activeSection === "material"
+                ? "bg-blue-600 text-white shadow-md"
+                : "text-gray-500 hover:text-blue-600"
             }`}
-            onClick={() => setActiveTab("material")}
           >
-            Materials
+            Material
           </button>
         </div>
-      </div>
 
-      {/* Content Section */}
-      <div className="flex-1 p-6 bg-white shadow-md rounded-md mx-6 mt-4">
-        {activeTab === "chat" ? <ChatPage groupId={groupId} /> : <MaterialPage groupId={groupId} />}
+        {/* Content Section (Fixed Height with Scroll) */}
+        <div className="flex-1 mt-6 overflow-y-auto">
+          {activeSection === "chat" && <ChatPage />}
+          {activeSection === "material" && <MaterialPage />}
+        </div>
       </div>
-    </div>
+    </main>
   );
 };
 

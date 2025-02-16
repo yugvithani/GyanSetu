@@ -52,18 +52,17 @@ exports.joinGroup = async (req, res) => {
 
 // Get all groups
 exports.getAllGroups = async (req, res) => {
-const userId = req.user.id;
-  try {
-    const groups = await Group.find({ admin: userId })
-      .populate("admin", "name email")
-      .populate("members", "name email")
-      .populate("items");
-
-    res.status(200).json(groups);
-  } catch (error) {
-    res.status(500).json({ error: "Error fetching groups" });
-  }
-};
+    const userId = req.user.id;
+      try {
+        const groups = await Group.find({ admin: userId })
+      .select("_id name description isPrivate"); 
+    
+        res.status(200).json(groups);
+      } catch (error) {
+        res.status(500).json({ error: "Error fetching groups" });
+      }
+    };
+    
 
 // Get a single group by ID
 exports.getGroupById = async (req, res) => {

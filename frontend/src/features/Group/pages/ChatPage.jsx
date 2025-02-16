@@ -1,50 +1,17 @@
-import React, { useState, useEffect } from "react";
-import io from "socket.io-client";
-import ChatBox from "../components/ChatBox";
-import axios from "axios";
-import BASE_URL from "../../../config";
+import React from "react";
 
-const SOCKET_URL = BASE_URL.replace("/api", "");
-const socket = io(SOCKET_URL);
-
-
-const ChatPage = ({ groupId }) => {
-  const [messages, setMessages] = useState([]);
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await axios.get(`${BASE_URL}/groups/${groupId}/messages`);
-        setMessages(response.data);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-      }
-    };
-    
-    fetchMessages();
-    socket.emit("joinGroup", groupId);
-    
-    socket.on("receiveMessage", (message) => {
-      setMessages((prev) => [...prev, message]);
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-    };
-  }, [groupId]);
-
-  const sendMessage = async (text) => {
-    const message = { text, groupId, sender: "User", timestamp: new Date() };
-    try {
-      await axios.post(`${BASE_URL}/api/groups/${groupId}/messages`, message);
-      socket.emit("sendMessage", message);
-      setMessages((prev) => [...prev, message]);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
-
-  return <ChatBox messages={messages} sendMessage={sendMessage} />;
+const ChatPage = () => {
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <h2 className="text-xl font-semibold text-blue-600 mb-4">Chat</h2>
+      <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+        {/* Chat Content (Scrollable) */}
+        <p>This is the chat section.</p>
+        <p>More chat content...</p>
+        <p>Even more chat messages...</p>
+      </div>
+    </div>
+  );
 };
 
 export default ChatPage;

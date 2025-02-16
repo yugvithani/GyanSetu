@@ -23,7 +23,7 @@ exports.register = async (req, res) => {
     const newUser = new User({ name, email, password: hashedPassword });
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: newUser._id }, JWT_SECRET, { expiresIn: '24h' });
     res.status(201).json({
       message: 'User registered successfully.',
       token,
@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password.' });
     }
 
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '24h' });
 
     res.status(200).json({
       message: 'Login successful.',
