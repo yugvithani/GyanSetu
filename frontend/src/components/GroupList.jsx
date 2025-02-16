@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import BASE_URL from "../config";
 
 const GroupList = () => {
@@ -10,10 +11,11 @@ const GroupList = () => {
   const [groupData, setGroupData] = useState({
     name: "",
     description: "",
-    isPrivate: true, 
+    isPrivate: true,
   });
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -91,8 +93,13 @@ const GroupList = () => {
     }
   };
 
+  // Function to handle group click
+  const handleGroupClick = (groupId) => {
+    navigate(`/group/${groupId}`); // Navigate to /group/:id
+  };
+
   return (
-    <div className="flex-1 bg-white rounded-2xl shadow-md p-6">
+    <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col">
       <ToastContainer />
       <div className="flex justify-between items-center">
         <h2 className="text-lg font-semibold text-blue-600">Your Groups</h2>
@@ -115,7 +122,8 @@ const GroupList = () => {
           {groups.map((group, index) => (
             <li
               key={index}
-              className="bg-blue-50 p-4 rounded-lg text-blue-600 shadow hover:shadow-lg transition-all"
+              className="bg-blue-50 p-4 rounded-lg text-blue-600 shadow hover:shadow-lg transition-all cursor-pointer"
+              onClick={() => handleGroupClick(group._id)} // Add onClick handler
             >
               <h3 className="font-semibold">{group.name}</h3>
               <p className="text-sm text-gray-600">{group.description || "No description"}</p>

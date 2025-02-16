@@ -5,7 +5,7 @@ import Register from '../src/features/Auth/pages/Register';
 import Home from '../src/pages/Home';
 import UserProfile from '../src/pages/UserProfile';
 import Layout from './pages/Layout';
-
+import GroupPage from './features/Group/pages/GroupPage';
 const App = () => {
   return (
     <Router>
@@ -15,6 +15,8 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Layout><Home /></Layout>} />
         <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
+        <Route path="/group/:id" element={<Layout><GroupPage /></Layout>} />
+
       </Routes>
     </Router>
   );
