@@ -2,24 +2,35 @@ const Group = require('../models/Group');
 const User = require('../models/User');
 const Item = require('../models/Item');
 const Session = require('../models/Session');
-
+const crypto = require("crypto");
 // Create a new group
 exports.createGroup = async (req, res) => {
+    const userId = req.user.id;
+    const { name, description, isPrivate } = req.body;
+    // console.log(name, description, isPrivate)
+    if (!name) {
+      return res.status(400).json({ error: "Group name is required" });
+    }
+  
+    const groupCode = crypto.randomBytes(4).toString("hex").toUpperCase(); // Generates an 8-character random code
+
     try {
-        const { name, description, groupCode, adminId, isPrivate } = req.body;
         const newGroup = new Group({
-            name,
-            description,
-            groupCode,
-            admin: adminId,
-            members: [adminId],
-            isPrivate
+          name,
+          description,
+          groupCode,
+          admin: userId,
+          members: [userId], // The creator is automatically a member
+          items: [],
+          isPrivate,
         });
+    
         await newGroup.save();
         res.status(201).json(newGroup);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+      } catch (error) {
+        res.status(500).json({ error: "Error creating group" });
+      }
+    
 };
 
 // Join a group
@@ -41,12 +52,17 @@ exports.joinGroup = async (req, res) => {
 
 // Get all groups
 exports.getAllGroups = async (req, res) => {
-    try {
-        const groups = await Group.find().populate('admin members');
-        res.status(200).json(groups);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+const userId = req.user.id;
+  try {
+    const groups = await Group.find({ admin: userId })
+      .populate("admin", "name email")
+      .populate("members", "name email")
+      .populate("items");
+
+    res.status(200).json(groups);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching groups" });
+  }
 };
 
 // Get a single group by ID
