@@ -7,12 +7,14 @@ const {
     updateGroup,
     removeMember,
     deleteGroup,
-    getGroupMembers
+    getGroupMembers,
+    searchPublicGroups
 } = require('../controllers/groupController');
 const { verifyToken } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
+router.get('/search',verifyToken,searchPublicGroups);
 router.post('/create', verifyToken, createGroup);
 router.post('/join', verifyToken, joinGroup);
 router.get('/all', verifyToken, getAllGroups);

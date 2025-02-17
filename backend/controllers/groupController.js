@@ -42,7 +42,7 @@ exports.createGroup = async (req, res) => {
 exports.joinGroup = async (req, res) => {
     const userId = req.user.id;
     const { groupCode } = req.body;
-  
+    
     try {
         const group = await Group.findOne({ groupCode });
         if (!group) return res.status(400).json({ error: "Invalid group code" });
@@ -64,6 +64,7 @@ exports.joinGroup = async (req, res) => {
 
         res.json(group);
     } catch (error) {
+        cosnole.log(error);
         res.status(500).json({ error: "Error joining group" });
     }
 };
@@ -150,5 +151,24 @@ exports.getGroupMembers = async (req, res) => {
         res.status(200).json(group.members);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+exports.searchPublicGroups = async (req, res) => {
+    
+    const query  = req.query.query;
+    if (!query) {
+        return res.status(400).json({ error: "Search query is required" });
+    }
+
+    try {
+        const groups = await Group.find({
+            name: { $regex: query, $options: "i" }, // Case-insensitive search
+            isPrivate: false, // Only search public groups
+        }).select("_id name description groupCode");  // Include groupCode
+
+        res.status(200).json(groups);
+    } catch (error) {
+        res.status(500).json({ error: "Error searching groups" });
     }
 };
