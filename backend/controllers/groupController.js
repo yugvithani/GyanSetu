@@ -7,30 +7,35 @@ const crypto = require("crypto");
 exports.createGroup = async (req, res) => {
     const userId = req.user.id;
     const { name, description, isPrivate } = req.body;
-    // console.log(name, description, isPrivate)
+
     if (!name) {
-      return res.status(400).json({ error: "Group name is required" });
+        return res.status(400).json({ error: "Group name is required" });
     }
-  
+
     const groupCode = crypto.randomBytes(4).toString("hex").toUpperCase(); // Generates an 8-character random code
 
     try {
         const newGroup = new Group({
-          name,
-          description,
-          groupCode,
-          admin: userId,
-          members: [userId], // The creator is automatically a member
-          items: [],
-          isPrivate,
+            name,
+            description,
+            groupCode,
+            admin: userId,
+            members: [userId], // The creator is automatically a member
+            items: [],
+            isPrivate,
         });
-    
+
         await newGroup.save();
+
+        // Add the group to the user's adminGroups only (not memberGroups)
+        await User.findByIdAndUpdate(userId, {
+            $push: { adminGroups: newGroup._id }
+        });
+
         res.status(201).json(newGroup);
-      } catch (error) {
+    } catch (error) {
         res.status(500).json({ error: "Error creating group" });
-      }
-    
+    }
 };
 
 // Join a group
@@ -39,30 +44,52 @@ exports.joinGroup = async (req, res) => {
     const { groupCode } = req.body;
   
     try {
-      const group = await Group.findOne({ groupCode });
-      if (!group) return res.status(400).json({ error: "Invalid group code" });
+        const group = await Group.findOne({ groupCode });
+        if (!group) return res.status(400).json({ error: "Invalid group code" });
   
-      if (group.members.includes(userId)) return res.status(400).json({ error: "Already a member" });
+        if (group.members.includes(userId)) return res.status(400).json({ error: "Already a member" });
   
-      group.members.push(userId);
-      await group.save();
-      res.json(group);
+        // Add user to the group's members array
+        group.members.push(userId);
+        
+        // Add the group to the user's memberGroups array
+        const user = await User.findById(userId);
+        if (!user) return res.status(400).json({ error: "User not found" });
+
+        user.memberGroups.push(group._id);
+        
+        // Save both the group and user
+        await group.save();
+        await user.save();
+
+        res.json(group);
     } catch (error) {
-      res.status(500).json({ error: "Error joining group" });
+        res.status(500).json({ error: "Error joining group" });
     }
-  };
+};
+
 // Get all groups
 exports.getAllGroups = async (req, res) => {
     const userId = req.user.id;
-      try {
-        const groups = await Group.find({ admin: userId })
-      .select("_id name description isPrivate"); 
-    
+    try {
+        const user = await User.findById(userId).populate([
+            { path: 'adminGroups', select: '_id name description isPrivate' },
+            { path: 'memberGroups', select: '_id name description isPrivate' }
+        ]);
+
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        const groups = [
+            ...user.adminGroups,
+            ...user.memberGroups
+        ];
+
         res.status(200).json(groups);
-      } catch (error) {
+    } catch (error) {
         res.status(500).json({ error: "Error fetching groups" });
-      }
-    };
+    }
+};
+
     
 
 // Get a single group by ID
