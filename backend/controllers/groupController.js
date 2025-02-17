@@ -35,21 +35,22 @@ exports.createGroup = async (req, res) => {
 
 // Join a group
 exports.joinGroup = async (req, res) => {
+    const userId = req.user.id;
+    const { groupCode } = req.body;
+  
     try {
-        const { groupCode, userId } = req.body;
-        const group = await Group.findOne({ groupCode });
-        if (!group) return res.status(404).json({ error: 'Group not found' });
-
-        if (!group.members.includes(userId)) {
-            group.members.push(userId);
-            await group.save();
-        }
-        res.status(200).json(group);
+      const group = await Group.findOne({ groupCode });
+      if (!group) return res.status(400).json({ error: "Invalid group code" });
+  
+      if (group.members.includes(userId)) return res.status(400).json({ error: "Already a member" });
+  
+      group.members.push(userId);
+      await group.save();
+      res.json(group);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Error joining group" });
     }
-};
-
+  };
 // Get all groups
 exports.getAllGroups = async (req, res) => {
     const userId = req.user.id;
@@ -113,35 +114,6 @@ exports.deleteGroup = async (req, res) => {
     }
 };
 
-// Get all messages in a group
-exports.getGroupMessages = async (req, res) => {
-    try {
-        const group = await Group.findById(req.params.id).populate({ path: 'items', match: { type: 'message' }, populate: { path: 'sender' } });
-        if (!group) return res.status(404).json({ error: 'Group not found' });
-        res.status(200).json(group.items);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Send a message in a group
-exports.sendMessage = async (req, res) => {
-    try {
-        const { groupId, senderId, content } = req.body;
-        const message = new Item({ type: ['message'], content, sender: senderId });
-        await message.save();
-
-        const group = await Group.findById(groupId);
-        if (!group) return res.status(404).json({ error: 'Group not found' });
-
-        group.items.push(message._id);
-        await group.save();
-
-        res.status(201).json(message);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
 
 // Get all members of a group
 exports.getGroupMembers = async (req, res) => {
