@@ -6,6 +6,7 @@ import Home from '../src/pages/Home';
 import UserProfile from '../src/pages/UserProfile';
 import Layout from './pages/Layout';
 import GroupPage from './features/Group/pages/GroupPage';
+import GroupSettings from './features/Group/pages/GroupSettings';
 const App = () => {
   return (
     <Router>
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/home" element={<Layout><Home /></Layout>} />
         <Route path="/profile" element={<Layout><UserProfile /></Layout>} />
         <Route path="/group/:groupId" element={<Layout><GroupPage /></Layout>} />
+        <Route path="/group-settings/:groupId" element={<Layout><GroupSettings /></Layout>} />
 
       </Routes>
     </Router>
