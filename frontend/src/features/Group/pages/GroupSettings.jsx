@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FiClipboard, FiUser, FiX, FiEdit, FiCheck } from "react-icons/fi";
+import {
+  FiClipboard,
+  FiUser,
+  FiX,
+  FiEdit,
+  FiCheck,
+  FiTrash2,
+  FiLogOut,
+} from "react-icons/fi";
 import axios from "axios";
 import BASE_URL from "../../../config";
 
@@ -8,6 +16,7 @@ const GroupSettingsPage = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
   const [groupInfo, setGroupInfo] = useState({
+    _id:"",
     name: "",
     description: "",
     groupCode: "",
@@ -70,18 +79,18 @@ const GroupSettingsPage = () => {
 
   const handleRemoveMember = async (memberId) => {
     try {
-        const token = localStorage.getItem("token");
-        await axios.delete(`${BASE_URL}/groups/${groupId}/member`, {
-            headers: { authorization: `Bearer ${token}` },
-            data: { userId: memberId } 
-        });
-        setMembers((prevMembers) =>
-            prevMembers.filter((member) => member._id !== memberId)
-        );
+      const token = localStorage.getItem("token");
+      await axios.delete(`${BASE_URL}/groups/${groupId}/member`, {
+        headers: { authorization: `Bearer ${token}` },
+        data: { userId: memberId },
+      });
+      setMembers((prevMembers) =>
+        prevMembers.filter((member) => member._id !== memberId)
+      );
     } catch (error) {
-        console.error("Error removing member", error);
+      console.error("Error removing member", error);
     }
-};
+  };
 
   const handleSaveName = async () => {
     try {
@@ -120,6 +129,31 @@ const GroupSettingsPage = () => {
     }
   };
 
+
+  const handleDeleteGroup = async () => {
+    try {
+      await axios.delete(`${BASE_URL}/groups/${groupInfo._id}`, {
+        headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      navigate("/home");
+    } catch (error) {
+      console.error("Error deleting group:", error.response?.data || error.message);
+    }
+  };
+
+  const handleExitGroup = async () => {
+    try {
+
+      await axios.delete(`${BASE_URL}/groups/${groupInfo._id}/exit`, {
+        headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      navigate("/home");
+    } catch (error) {
+      console.error("Error exiting group:", error.response?.data || error.message);
+    }
+  };
+
+
   return (
     <main className="flex flex-1 mt-8 relative">
       <div className="flex-1 bg-white rounded-2xl shadow-lg p-10 flex flex-col max-h-[87vh]">
@@ -145,7 +179,9 @@ const GroupSettingsPage = () => {
               </>
             ) : (
               <>
-                <h2 className="text-4xl font-bold text-blue-800">{groupInfo.name}</h2>
+                <h2 className="text-4xl font-bold text-blue-800">
+                  {groupInfo.name}
+                </h2>
                 {currentUser && currentUser === groupInfo.admin && (
                   <button
                     onClick={() => setIsEditingName(true)}
@@ -160,7 +196,7 @@ const GroupSettingsPage = () => {
               </>
             )}
           </div>
-  
+
           <div className="mt-4 flex flex-col items-center space-y-2 bg-gray-50 p-5 rounded-lg shadow-md">
             {isEditingDescription ? (
               <>
@@ -182,7 +218,9 @@ const GroupSettingsPage = () => {
               </>
             ) : (
               <>
-                <p className="text-lg text-blue-800 italic">{groupInfo.description}</p>
+                <p className="text-lg text-blue-800 italic">
+                  {groupInfo.description}
+                </p>
                 {currentUser && currentUser === groupInfo.admin && (
                   <button
                     onClick={() => setIsEditingDescription(true)}
@@ -198,11 +236,13 @@ const GroupSettingsPage = () => {
             )}
           </div>
         </div>
-  
+
         {currentUser && currentUser === groupInfo.admin && (
           <div className="flex items-center justify-center bg-gray-50 p-5 rounded-lg shadow-md mt-6">
             <span className="font-semibold text-blue-800">Group Code:</span>
-            <span className="text-xl text-gray-700 mx-3 font-mono bg-gray-200 px-3 py-1 rounded-md shadow-md">{groupInfo.groupCode}</span>
+            <span className="text-xl text-gray-700 mx-3 font-mono bg-gray-200 px-3 py-1 rounded-md shadow-md">
+              {groupInfo.groupCode}
+            </span>
             <button
               onClick={handleCopyToClipboard}
               className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-600 relative group"
@@ -214,9 +254,11 @@ const GroupSettingsPage = () => {
             </button>
           </div>
         )}
-  
-        <div className="mt-6">
-          <h3 className="text-2xl font-semibold text-blue-800 mb-4 underline decoration-gray-500">Group Members</h3>
+
+        <div className="mt-6 max-h-[50vh] overflow-y-auto">
+          <h3 className="text-2xl font-semibold text-blue-800 mb-4 underline decoration-gray-500">
+            Group Members
+          </h3>
           <ul className="space-y-4">
             {members.map((member) => (
               <li
@@ -231,11 +273,15 @@ const GroupSettingsPage = () => {
                     }
                     className="w-14 h-14 rounded-full border-2 shadow-md"
                   />
-                  <span className="text-lg text-blue-900 font-medium">{member.name}</span>
+                  <span className="text-lg text-blue-900 font-medium">
+                    {member.name}
+                  </span>
                 </div>
-  
+
                 {member._id === groupInfo.admin ? (
-                  <span className="text-sm text-gray-600 font-semibold">Admin</span>
+                  <span className="text-sm text-gray-600 font-semibold">
+                    Admin
+                  </span>
                 ) : (
                   currentUser &&
                   currentUser === groupInfo.admin && (
@@ -254,10 +300,30 @@ const GroupSettingsPage = () => {
             ))}
           </ul>
         </div>
+
+        {/* Exit Group / Delete Group Button */}
+        <div className="mt-8 flex justify-center">
+      {currentUser === groupInfo.admin ? (
+        <button
+          onClick={handleDeleteGroup}
+          className="flex items-center space-x-3 bg-red-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-red-700 transition"
+        >
+          <FiTrash2 className="text-lg" />
+          <span className="text-lg font-medium">Delete Group</span>
+        </button>
+      ) : (
+        <button
+          onClick={handleExitGroup}
+          className="flex items-center space-x-3 bg-gray-700 text-white px-6 py-3 rounded-full shadow-lg hover:bg-gray-800 transition"
+        >
+          <FiLogOut className="text-lg" />
+          <span className="text-lg font-medium">Exit Group</span>
+        </button>
+      )}
+    </div>
       </div>
     </main>
   );
-  
 };
 
 export default GroupSettingsPage;
