@@ -100,6 +100,7 @@ exports.getGroupById = async (req, res) => {
         if (!group) return res.status(404).json({ error: 'Group not found' });
 
         res.status(200).json({
+            _id:req.params.id,
             name: group.name,
             description: group.description,
             groupCode: group.groupCode,
@@ -204,6 +205,33 @@ exports.getGroupMembers = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+exports.exitGroup = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const group = await Group.findById(req.params.id);
+
+        if (!group) return res.status(404).json({ error: 'Group not found' });
+
+        // If user is the admin, prevent them from exiting directly
+        if (group.admin.toString() === userId) {
+            return res.status(403).json({ error: 'Admin cannot exit the group. Try deleting it instead.' });
+        }
+
+        // Remove user from members list
+        group.members = group.members.filter(member => member.toString() !== userId);
+        await group.save();
+
+        // Remove group reference from user's memberGroups list
+        await User.findByIdAndUpdate(userId, { $pull: { memberGroups: group._id } });
+
+        res.status(200).json({ message: 'Exited the group successfully' });
+    } catch (error) {
+        res.status(500).json({ error: "Error exiting group" });
+    }
+};
+
 
 exports.searchPublicGroups = async (req, res) => {
     
