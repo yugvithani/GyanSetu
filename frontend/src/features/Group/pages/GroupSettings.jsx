@@ -70,17 +70,18 @@ const GroupSettingsPage = () => {
 
   const handleRemoveMember = async (memberId) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`${BASE_URL}/groups/${groupId}/members/${memberId}`, {
-        headers: { authorization: `Bearer ${token}` },
-      });
-      setMembers((prevMembers) =>
-        prevMembers.filter((member) => member._id !== memberId)
-      );
+        const token = localStorage.getItem("token");
+        await axios.delete(`${BASE_URL}/groups/${groupId}/member`, {
+            headers: { authorization: `Bearer ${token}` },
+            data: { userId: memberId } // Sending userId in the request body
+        });
+        setMembers((prevMembers) =>
+            prevMembers.filter((member) => member._id !== memberId)
+        );
     } catch (error) {
-      console.error("Error removing member", error);
+        console.error("Error removing member", error);
     }
-  };
+};
 
   const handleSaveName = async () => {
     try {
@@ -121,95 +122,106 @@ const GroupSettingsPage = () => {
 
   return (
     <main className="flex flex-1 mt-8 relative">
-      <div className="flex-1 bg-white rounded-2xl shadow-xl p-6 flex flex-col max-h-[87vh]">
-        <div className="space-y-6 text-center">
-          <div className="flex items-center justify-center">
+      <div className="flex-1 bg-white rounded-2xl shadow-lg p-10 flex flex-col max-h-[87vh]">
+        <div className="space-y-8 text-center">
+          <div className="flex items-center justify-center space-x-3">
             {isEditingName ? (
               <>
                 <input
                   type="text"
                   value={newGroupName}
                   onChange={(e) => setNewGroupName(e.target.value)}
-                  className="text-4xl font-bold text-blue-700 border-2 border-blue-500 p-2 rounded-lg"
+                  className="text-4xl font-bold text-blue-800 bg-gray-100 p-3 rounded-lg focus:ring-4 focus:ring-gray-300 shadow-md"
                 />
                 <button
                   onClick={handleSaveName}
-                  className="ml-2 bg-blue-600 text-white px-3 py-1 rounded-full"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-600 relative group"
                 >
-                  <FiCheck className="text-lg" />
+                  <FiCheck className="text-xl" />
+                  <span className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 text-sm text-white bg-blue-500 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                    Save Name
+                  </span>
                 </button>
               </>
             ) : (
               <>
-                <h2 className="text-4xl font-bold text-blue-700">
-                  {groupInfo.name}
-                </h2>
+                <h2 className="text-4xl font-bold text-blue-800">{groupInfo.name}</h2>
                 {currentUser && currentUser === groupInfo.admin && (
                   <button
                     onClick={() => setIsEditingName(true)}
-                    className="ml-2 text-blue-500"
+                    className="text-gray-600 hover:text-gray-500 relative group"
                   >
-                    <FiEdit className="text-xl" />
+                    <FiEdit className="text-2xl" />
+                    <span className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 text-sm text-white bg-blue-500 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                      Edit Name
+                    </span>
                   </button>
                 )}
               </>
             )}
           </div>
-
-          <div className="mt-2 flex items-center justify-center">
+  
+          <div className="mt-4 flex flex-col items-center space-y-2 bg-gray-50 p-5 rounded-lg shadow-md">
             {isEditingDescription ? (
               <>
                 <textarea
                   value={newGroupDescription}
                   onChange={(e) => setNewGroupDescription(e.target.value)}
-                  className="text-xl text-gray-600 w-full border-2 border-blue-500 p-3 rounded-lg"
+                  className="text-xl text-blue-800 bg-white p-3 rounded-lg w-full focus:ring-4 focus:ring-gray-300 shadow-md"
                   rows="4"
                 />
                 <button
                   onClick={handleSaveDescription}
-                  className="ml-2 bg-blue-600 text-white px-3 py-1 rounded-full"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-600 relative group"
                 >
-                  <FiCheck className="text-lg" />
+                  <FiCheck className="text-xl" />
+                  <span className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 text-sm text-white bg-blue-500 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                    Save Description
+                  </span>
                 </button>
               </>
             ) : (
               <>
-                <p className="text-xl text-gray-600">{groupInfo.description}</p>
+                <p className="text-lg text-blue-800 italic">{groupInfo.description}</p>
                 {currentUser && currentUser === groupInfo.admin && (
                   <button
                     onClick={() => setIsEditingDescription(true)}
-                    className="ml-2 text-blue-500"
+                    className="text-gray-600 hover:text-gray-500 relative group"
                   >
-                    <FiEdit className="text-xl" />
+                    <FiEdit className="text-2xl" />
+                    <span className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 text-sm text-white bg-blue-500 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                      Edit Description
+                    </span>
                   </button>
                 )}
               </>
             )}
           </div>
         </div>
-
+  
         {currentUser && currentUser === groupInfo.admin && (
-          <div className="flex items-center justify-center bg-gray-100 p-4 rounded-lg shadow-md">
-            <span className="font-semibold text-gray-700">Group Code:</span>
-            <span className="text-xl text-blue-500">{groupInfo.groupCode}</span>
+          <div className="flex items-center justify-center bg-gray-50 p-5 rounded-lg shadow-md mt-6">
+            <span className="font-semibold text-blue-800">Group Code:</span>
+            <span className="text-xl text-gray-700 mx-3 font-mono bg-gray-200 px-3 py-1 rounded-md shadow-md">{groupInfo.groupCode}</span>
             <button
               onClick={handleCopyToClipboard}
-              className="bg-blue-600 text-white px-4 py-2 rounded-full"
+              className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-600 relative group"
             >
-              <FiClipboard className="text-lg" />
+              <FiClipboard className="text-xl" />
+              <span className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 text-sm text-white bg-blue-500 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                Copy Group Code
+              </span>
             </button>
           </div>
         )}
-
+  
         <div className="mt-6">
-          <h3 className="text-2xl font-semibold text-gray-700 mb-4">
-            Group Members
-          </h3>
+          <h3 className="text-2xl font-semibold text-blue-800 mb-4 underline decoration-gray-500">Group Members</h3>
           <ul className="space-y-4">
             {members.map((member) => (
               <li
                 key={member._id}
-                className="flex items-center justify-between p-4 bg-gray-100 rounded-lg"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg shadow-md"
               >
                 <div className="flex items-center space-x-4">
                   <img
@@ -217,21 +229,24 @@ const GroupSettingsPage = () => {
                       member.profilePic ||
                       "https://i.pinimg.com/474x/51/99/8c/51998c7c545eef94a4cf5e8fc352cfa9.jpg"
                     }
-                    className="w-12 h-12 rounded-full"
+                    className="w-14 h-14 rounded-full border-2 shadow-md"
                   />
-                  <span className="text-lg text-gray-700">{member.name}</span>
+                  <span className="text-lg text-blue-900 font-medium">{member.name}</span>
                 </div>
-
+  
                 {member._id === groupInfo.admin ? (
-                  <span className="text-sm text-blue-500">Admin</span>
+                  <span className="text-sm text-gray-600 font-semibold">Admin</span>
                 ) : (
                   currentUser &&
                   currentUser === groupInfo.admin && (
                     <button
                       onClick={() => handleRemoveMember(member._id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-full"
+                      className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-600 relative group"
                     >
                       <FiX className="text-lg" />
+                      <span className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 text-sm text-white bg-blue-500 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                        Remove Member
+                      </span>
                     </button>
                   )
                 )}
@@ -242,6 +257,7 @@ const GroupSettingsPage = () => {
       </div>
     </main>
   );
+  
 };
 
 export default GroupSettingsPage;
