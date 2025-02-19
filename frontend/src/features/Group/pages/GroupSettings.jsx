@@ -73,7 +73,7 @@ const GroupSettingsPage = () => {
         const token = localStorage.getItem("token");
         await axios.delete(`${BASE_URL}/groups/${groupId}/member`, {
             headers: { authorization: `Bearer ${token}` },
-            data: { userId: memberId } // Sending userId in the request body
+            data: { userId: memberId } 
         });
         setMembers((prevMembers) =>
             prevMembers.filter((member) => member._id !== memberId)
