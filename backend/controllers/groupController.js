@@ -96,52 +96,103 @@ exports.getAllGroups = async (req, res) => {
 // Get a single group by ID
 exports.getGroupById = async (req, res) => {
     try {
-        const group = await Group.findById(req.params.id).populate('admin members items');
-        if (!group) return res.status(404).json({ error: 'Group not found' });
-        res.status(200).json(group);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Update group details
-exports.updateGroup = async (req, res) => {
-    try {
-        const { name, description, isPrivate } = req.body;
-        const group = await Group.findByIdAndUpdate(req.params.id, { name, description, isPrivate }, { new: true });
-        if (!group) return res.status(404).json({ error: 'Group not found' });
-        res.status(200).json(group);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Remove a member from a group
-exports.removeMember = async (req, res) => {
-    try {
-        const { userId } = req.body;
         const group = await Group.findById(req.params.id);
         if (!group) return res.status(404).json({ error: 'Group not found' });
 
-        group.members = group.members.filter(member => member.toString() !== userId);
+        res.status(200).json({
+            name: group.name,
+            description: group.description,
+            groupCode: group.groupCode,
+            admin: group.admin,
+            members: group.members
+        });
+
+        
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Update group details (Only Admin Can Update)
+exports.updateGroup = async (req, res) => {
+    try {
+        const { name, description, isPrivate } = req.body;
+        const userId = req.user.id;
+        const group = await Group.findById(req.params.id);
+
+        if (!group) return res.status(404).json({ error: 'Group not found' });
+
+        if (group.admin.toString() !== userId) {
+            return res.status(403).json({ error: 'Only admin can update this group' });
+        }
+
+        group.name = name || group.name;
+        group.description = description || group.description;
+        group.isPrivate = isPrivate !== undefined ? isPrivate : group.isPrivate;
+        group.updatedAt = Date.now();
+
         await group.save();
+        console.log("Group updated successfully")
         res.status(200).json(group);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error updating group" });
     }
 };
 
-// Delete a group
+// Remove a member from a group (Only Admin Can Remove)
+exports.removeMember = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const adminId = req.user.id;
+        const group = await Group.findById(req.params.id);
+
+        if (!group) return res.status(404).json({ error: 'Group not found' });
+
+        if (group.admin.toString() !== adminId) {
+            return res.status(403).json({ error: 'Only admin can remove members' });
+        }
+
+        if (!group.members.includes(userId)) {
+            return res.status(400).json({ error: 'User is not a member of this group' });
+        }
+
+        group.members = group.members.filter(member => member.toString() !== userId);
+        await group.save();
+
+        await User.findByIdAndUpdate(userId, {
+            $pull: { memberGroups: group._id }
+        });
+
+        res.status(200).json({ message: 'Member removed successfully' });
+    } catch (error) {
+        res.status(500).json({ error: "Error removing member" });
+    }
+};
+
+// Delete a group (Only Admin Can Delete)
 exports.deleteGroup = async (req, res) => {
     try {
-        const group = await Group.findByIdAndDelete(req.params.id);
+        const adminId = req.user.id;
+        const group = await Group.findById(req.params.id);
+
         if (!group) return res.status(404).json({ error: 'Group not found' });
+
+        if (group.admin.toString() !== adminId) {
+            return res.status(403).json({ error: 'Only admin can delete this group' });
+        }
+
+        await Group.findByIdAndDelete(req.params.id);
+
+        await User.updateMany(
+            { $or: [{ adminGroups: group._id }, { memberGroups: group._id }] },
+            { $pull: { adminGroups: group._id, memberGroups: group._id } }
+        );
+
         res.status(200).json({ message: 'Group deleted successfully' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: "Error deleting group" });
     }
 };
-
 
 // Get all members of a group
 exports.getGroupMembers = async (req, res) => {
