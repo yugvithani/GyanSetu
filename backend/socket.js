@@ -31,16 +31,16 @@ function initializeSocket(server) {
             socket.join(groupId);
         });
 
-        socket.on("sendMessage", async ({ groupId, senderId, content, senderName }) => {
-            if (!groupId || !senderId || !content || !senderName) return;
-            console.log("Received sendMessage event:", { groupId, senderId, senderName, content });
+        socket.on("sendMessage", async ({ groupId, senderId, content }) => {
+            if (!groupId || !senderId || !content ) return;
+            console.log("Received sendMessage event:", { groupId, senderId, content });
 
             try {
                 const req = { params: { groupId }, body: { content }, user: { id: senderId } };
                 const res = {
                     status: () => res,
                     json: (message) => {
-                        const messageWithSender = { ...message, senderId, senderName };
+                        const messageWithSender = { ...message, sender: { _id: senderId }, content };
                         io.to(groupId).emit("receiveMessage", messageWithSender);
                         socket.emit("messageSent", messageWithSender);
                     }
@@ -50,7 +50,7 @@ function initializeSocket(server) {
                 console.error("Error sending message:", error);
             }
         });
-
+        
         socket.on('disconnect', () => {
             console.log('User disconnected:', socket.id);
             for (const [userId, sockId] of activeUsers.entries()) {

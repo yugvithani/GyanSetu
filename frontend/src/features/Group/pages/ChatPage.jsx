@@ -13,7 +13,9 @@ const ChatPage = () => {
   const messagesEndRef = useRef(null);
   const [userId, setUserId] = useState(null);
   const [socket, setSocket] = useState(null);
+  const [senderNames, setSenderNames] = useState(new Map()); // Cache for sender names
 
+  // Fetch the current user's ID
   useEffect(() => {
     const fetchUserId = async () => {
       try {
@@ -28,62 +30,84 @@ const ChatPage = () => {
     fetchUserId();
   }, []);
 
+  // Fetch the sender's name by senderId
+  const fetchSenderName = async (senderId) => {
+    if (senderNames.has(senderId)) {
+      return senderNames.get(senderId); // Return cached name if available
+    }
+
+    try {
+      const response = await axios.get(`${BASE_URL}/user/${senderId}`, {
+        headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      const name = response.data.name;
+      setSenderNames((prev) => new Map(prev).set(senderId, name)); // Cache the name
+      return name;
+    } catch (error) {
+      console.error("Error fetching sender's name:", error);
+      return "Unknown"; // Fallback if the name cannot be fetched
+    }
+  };
+
+  // Initialize socket connection and handle incoming messages
   useEffect(() => {
     if (!userId) return;
-
+  
     const newSocket = io(SOCKET_URL, { transports: ["websocket"] });
     setSocket(newSocket);
-
+  
     newSocket.emit("joinGroup", { groupId, userId });
-
+  
     newSocket.on("receiveMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      setMessages((prevMessages) => [...prevMessages, message]); 
     });
-
+    
+    
+  
     return () => {
       newSocket.off("receiveMessage");
       newSocket.disconnect();
     };
   }, [groupId, userId]);
 
+  // Fetch existing messages for the group
   useEffect(() => {
     axios
       .get(`${BASE_URL}/chat/${groupId}/messages`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        setMessages(response.data);
+        setMessages(response.data); // Set messages without sender names initially
       })
       .catch((error) => console.error("Error fetching messages:", error));
   }, [groupId]);
 
+  // Scroll to the bottom when messages are updated
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  // Send a new message
   const sendMessage = async () => {
     if (!newMessage.trim() || !userId || !socket) return;
-
+  
     const messageData = {
       groupId,
-      sender: { _id: userId, name: "You" }, // Temporary optimistic update
+      senderId: userId,
       content: newMessage,
     };
-
-    setMessages((prevMessages) => [...prevMessages, messageData]); // Optimistic update
-    setNewMessage("");
-
-    try {
-      await axios.post(`${BASE_URL}/chat/${groupId}/send`, messageData, {
-        headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-
-      socket.emit("sendMessage", messageData);
+  
+    try {  
+      socket.emit("sendMessage", messageData); // Emit only after server response
     } catch (error) {
       console.error("Error sending message:", error);
     }
+  
+    setNewMessage("");
   };
+  
 
+  // Scroll to the bottom of the chat
   const scrollToBottom = () => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -96,6 +120,16 @@ const ChatPage = () => {
         {messages.length > 0 ? (
           messages.map((msg, index) => {
             const isSentByUser = msg.sender?._id === userId;
+            const displayName = isSentByUser ? "You" : "Loading..."; // Default to "Loading..." while fetching the name
+
+            // Fetch the sender's name if not already cached
+            if (!isSentByUser && !senderNames.has(msg.sender?._id)) {
+              fetchSenderName(msg.sender?._id).then((name) => {
+                // Update the sender's name in the cache
+                setSenderNames((prev) => new Map(prev).set(msg.sender?._id, name));
+              });
+            }
+
             return (
               <div
                 key={index}
@@ -109,7 +143,7 @@ const ChatPage = () => {
                   }`}
                 >
                   <p className="text-xs font-semibold opacity-75 mb-1">
-                    {isSentByUser ? "You" : msg.sender?.name || "Unknown"}
+                    {isSentByUser ? "You" : senderNames.get(msg.sender?._id) || "Unknown"}
                   </p>
                   <p className="text-md">{msg.content}</p>
                 </div>
