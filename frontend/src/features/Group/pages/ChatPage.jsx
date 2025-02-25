@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import axios from "axios";
 import BASE_URL from "../../../config";
+import AttachmentButton from "./../components/AttachmentButton";
 
 const SOCKET_URL = BASE_URL.replace("/api", "");
 
@@ -157,20 +158,22 @@ const ChatPage = () => {
       </div>
 
       <div className="w-full bg-white p-4 border-t flex items-center space-x-3 shadow-md">
-        <input
-          type="text"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          className="flex-1 p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg shadow-sm"
-          placeholder="Type a message..."
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition duration-300 shadow-md"
-        >
-          Send
-        </button>
-      </div>
+  <AttachmentButton />
+  <input
+    type="text"
+    value={newMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
+    className="flex-1 p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg shadow-sm"
+    placeholder="Type a message..."
+  />
+  <button
+    onClick={sendMessage}
+    className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition duration-300 shadow-md"
+  >
+    Send
+  </button>
+</div>
+
     </div>
   );
 };
