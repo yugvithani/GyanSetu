@@ -3,6 +3,7 @@ import axios from 'axios';
 import BASE_URL from '../config';
 import { FiUser } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
+import { Camera } from "lucide-react";
 
 const UserProfile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -10,8 +11,9 @@ const UserProfile = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState({});
   const dropdownRef = useRef(null);
-  const [selectedFile, setSelectedFile] = useState(null); // To store the selected file
+  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
+  const defaultProfilePic = 'https://th.bing.com/th/id/OIP.seJIU6-wCa7OtTYHR85z3QHaHa?w=165&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7';// change
 
   // Fetch user profile data
   const fetchUserProfile = async () => {
@@ -21,7 +23,7 @@ const UserProfile = () => {
           authorization: `Bearer ${localStorage.getItem('token')}`,
         }
       }); // Fetch user info
-      setUserInfo(response.data); // Set the user's profile info in state
+      setUserInfo(response.data);
 
       setEditData({
         name: response.data.name,
@@ -98,7 +100,7 @@ const UserProfile = () => {
       formData.append('bio', editData.bio);
 
       if (selectedFile) {
-        formData.append('profilePicture', selectedFile); // Send the selected file to the backend
+        formData.append('profilePicture', selectedFile); // Send the selected file to the backend if change
       }
       const response = await axios.put(`${BASE_URL}/user/profile`, formData, {
         headers: {
@@ -110,9 +112,7 @@ const UserProfile = () => {
       setShowEditModal(false);
       fetchUserProfile(); // Refresh user profile after submission
     } catch (error) {
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-      }
+      console.error('Response data:', error.response?.data);
     }
   };
 
@@ -141,7 +141,7 @@ const UserProfile = () => {
               <div className="px-4 py-2 text-gray-700">
                 <p className="font-semibold">My Profile</p>
                 <img
-                  src={userInfo.profilePicture ? `${BASE_URL}/${userInfo.profilePicture}` : 'https://via.placeholder.com/150'}
+                  src={userInfo.profilePicture || defaultProfilePic}
                   alt="Profile"
                   className="w-16 h-16 rounded-full mx-auto my-2"
                 />
@@ -172,25 +172,36 @@ const UserProfile = () => {
       {/* Edit Profile Modal */}
       {showEditModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-gray-900 rounded-lg p-6 w-96">
+          <div className="bg-gray-900 rounded-lg p-6 w-96 text-white">
             <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
             <form onSubmit={handleProfileSubmit}>
-              <div className="mb-4">
-                <label className="block mb-2">Profile Picture</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleProfilePicChange}
-                  className="block w-full text-gray-700"
-                />
-                {editData.profilePicture && (
-                  <img
-                    src={editData.profilePicture}
-                    alt="Preview"
-                    className="mt-2 w-16 h-16 rounded-full"
+              <div className="flex flex-col items-center mb-4">
+
+                <div className="relative w-24 h-24">
+                  <label htmlFor="profilePicInput" className="cursor-pointer">
+                    <img
+                      src={editData.profilePicture || defaultProfilePic}
+                      alt="Preview"
+                      className="w-24 h-24 rounded-full object-cover"
+                    />
+
+                    {/* Camera icon positioned at bottom-right */}
+                    <div className="absolute bottom-0 right-0 text-gray-300 p-1 rounded-full ">
+                      <Camera className="w-5 h-5" />
+                    </div>
+                  </label>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePicChange}
+                    className="hidden"
+                    id="profilePicInput"
                   />
-                )}
+                </div>
+
               </div>
+
               <div className="mb-4">
                 <label className="block mb-2">Name</label>
                 <input
