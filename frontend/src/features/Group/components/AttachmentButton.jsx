@@ -1,10 +1,47 @@
 import React, { useState } from "react";
 import { FaPaperclip, FaImage, FaFileAlt, FaVideo } from "react-icons/fa";
 import { motion } from "framer-motion";
-
-const AttachmentButton = ({ onSelect }) => {
+import axios from "axios";
+import BASE_URL from "../../../config";
+const AttachmentButton = ({ groupId, userId, socket }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [hovered, setHovered] = useState(null);
+
+  const handleFileUpload = (type) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = type === "image" ? "image/*" : type === "video" ? "video/*" : "*/*";
+    input.onchange = async (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("groupId", groupId);
+        formData.append("userId", userId);
+
+        try {
+          const { data } = await axios.post(`${BASE_URL}/chat/upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          if (data.success) {
+            // Emit the message via socket
+            socket.emit("sendMessage", {
+              groupId,
+              sender: userId,
+              type,
+              fileUrl: data.fileUrl, // URL from backend
+            });
+          } else {
+            console.error("File upload failed:", data.message);
+          }
+        } catch (error) {
+          console.error("Error uploading file:", error.response?.data || error.message);
+        }
+      }
+    };
+    input.click();
+  };
 
   return (
     <div className="relative">
@@ -30,7 +67,7 @@ const AttachmentButton = ({ onSelect }) => {
             <div key={index} className="relative flex flex-col items-center">
               <button
                 className="p-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition w-10 h-10 flex justify-center items-center"
-                onClick={() => onSelect(btn.type)}
+                onClick={() => handleFileUpload(btn.type)}
                 onMouseEnter={() => setHovered(btn.type)}
                 onMouseLeave={() => setHovered(null)}
               >
