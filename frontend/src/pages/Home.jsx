@@ -7,7 +7,6 @@ const HomePage = () => {
     // Center Content
     <main className="flex flex-1 mt-8 space-x-6">
       <GroupList />
-
       <RecentActivity />
     </main>
   );

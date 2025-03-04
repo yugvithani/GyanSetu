@@ -53,18 +53,16 @@ const ChatPage = () => {
   // Initialize socket connection and handle incoming messages
   useEffect(() => {
     if (!userId) return;
-  
+
     const newSocket = io(SOCKET_URL, { transports: ["websocket"] });
     setSocket(newSocket);
-  
+
     newSocket.emit("joinGroup", { groupId, userId });
-  
+
     newSocket.on("receiveMessage", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]); 
+      setMessages((prevMessages) => [...prevMessages, message]);
     });
-    
-    
-  
+
     return () => {
       newSocket.off("receiveMessage");
       newSocket.disconnect();
@@ -79,6 +77,7 @@ const ChatPage = () => {
       })
       .then((response) => {
         setMessages(response.data); // Set messages without sender names initially
+        // console.log(response.data);
       })
       .catch((error) => console.error("Error fetching messages:", error));
   }, [groupId]);
@@ -90,23 +89,22 @@ const ChatPage = () => {
 
   // Send a new message
   const sendMessage = async () => {
-    if (!newMessage.trim() || !userId || !socket) return;
+    if (!newMessage.trim() || !userId) return;
   
-    const messageData = {
-      groupId,
-      senderId: userId,
-      content: newMessage,
+    const messageData = { 
+      groupId, 
+      senderId: userId, 
+      content: newMessage ,
+      type:"message" 
     };
-  
-    try {  
-      socket.emit("sendMessage", messageData); // Emit only after server response
+
+    try {
+      socket.emit("sendMessage", messageData);
     } catch (error) {
       console.error("Error sending message:", error);
     }
-  
     setNewMessage("");
   };
-  
 
   // Scroll to the bottom of the chat
   const scrollToBottom = () => {
@@ -118,62 +116,75 @@ const ChatPage = () => {
   return (
     <div className="flex-1 flex flex-col h-full p-6 bg-gray-100">
       <div className="flex-1 overflow-y-auto space-y-4 px-4 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-300">
-        {messages.length > 0 ? (
-          messages.map((msg, index) => {
-            const isSentByUser = msg.sender?._id === userId;
-            const displayName = isSentByUser ? "You" : "Loading..."; // Default to "Loading..." while fetching the name
+      {messages.length > 0 ? (
+        messages.map((msg, index) => {
+          const isSentByUser = msg.sender?._id === userId;
+          const displayName = isSentByUser
+            ? "You"
+            : senderNames.get(msg.sender?._id) || "Loading...";
 
-            // Fetch the sender's name if not already cached
-            if (!isSentByUser && !senderNames.has(msg.sender?._id)) {
-              fetchSenderName(msg.sender?._id).then((name) => {
-                // Update the sender's name in the cache
-                setSenderNames((prev) => new Map(prev).set(msg.sender?._id, name));
-              });
-            }
+          if (!isSentByUser && !senderNames.has(msg.sender?._id)) {
+            fetchSenderName(msg.sender?._id).then((name) => {
+              setSenderNames((prev) =>
+                new Map(prev).set(msg.sender?._id, name)
+              );
+            });
+          }
 
-            return (
+          return (
+            <div
+              key={index}
+              className={`flex ${
+                isSentByUser ? "justify-end" : "justify-start"
+              } px-2`}
+            >
               <div
-                key={index}
-                className={`flex ${isSentByUser ? "justify-end" : "justify-start"} px-2`}
+                className={`p-4 max-w-md rounded-2xl shadow-md text-lg transition-transform transform hover:scale-105 relative group ${
+                  isSentByUser
+                    ? "bg-blue-600 text-white ml-8 rounded-br-none"
+                    : "bg-gray-200 text-black mr-8 rounded-bl-none"
+                }`}
               >
-                <div
-                  className={`p-4 max-w-md rounded-2xl shadow-md text-lg transition-transform transform hover:scale-105 relative group ${
-                    isSentByUser
-                      ? "bg-blue-600 text-white ml-8 rounded-br-none"
-                      : "bg-gray-200 text-black mr-8 rounded-bl-none"
-                  }`}
-                >
-                  <p className="text-xs font-semibold opacity-75 mb-1">
-                    {isSentByUser ? "You" : senderNames.get(msg.sender?._id) || "Unknown"}
-                  </p>
+                <p className="text-xs font-semibold opacity-75 mb-1">
+                  {displayName}
+                </p>
+                {msg.type[0] === "image" ? (
+                  <img
+                    src={msg.content}
+                    alt="Sent image"
+                    className="rounded-lg max-w-full h-auto mt-2"
+                  />
+                ) : (
                   <p className="text-md">{msg.content}</p>
-                </div>
+                )}
               </div>
-            );
-          })
-        ) : (
+            </div>
+          );
+        })
+      ) : (
+        <div className="flex justify-center items-center h-full">
           <p className="text-gray-500 text-center italic">No messages yet.</p>
-        )}
+        </div>
+      )}
         <div ref={messagesEndRef} />
       </div>
 
       <div className="w-full bg-white p-4 border-t flex items-center space-x-3 shadow-md">
-  <AttachmentButton />
-  <input
-    type="text"
-    value={newMessage}
-    onChange={(e) => setNewMessage(e.target.value)}
-    className="flex-1 p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg shadow-sm"
-    placeholder="Type a message..."
-  />
-  <button
-    onClick={sendMessage}
-    className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition duration-300 shadow-md"
-  >
-    Send
-  </button>
-</div>
-
+      <AttachmentButton sendMessage={sendMessage} socket={socket} userId={userId} groupId={groupId} />
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          className="flex-1 p-4 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg shadow-sm"
+          placeholder="Type a message..."
+        />
+        <button
+          onClick={sendMessage}
+          className="bg-blue-600 text-white px-6 py-3 rounded-full hover:bg-blue-700 transition duration-300 shadow-md"
+        >
+          Send
+        </button>
+      </div>
     </div>
   );
 };

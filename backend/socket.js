@@ -1,6 +1,6 @@
 const { Server } = require('socket.io');
 const { sendMessage } = require('./controllers/chatController');
-
+const { uploadCompressedImage } = require("./services/azureService");
 const activeUsers = new Map(); // Maps userId -> socketId
 
 function initializeSocket(server) {
@@ -31,16 +31,16 @@ function initializeSocket(server) {
             socket.join(groupId);
         });
 
-        socket.on("sendMessage", async ({ groupId, senderId, content }) => {
-            if (!groupId || !senderId || !content ) return;
-            console.log("Received sendMessage event:", { groupId, senderId, content });
-
+        socket.on("sendMessage", async ({ groupId, senderId, content, type }) => {
+            if (!groupId || !senderId || !content || !type) return;
+            console.log("Received sendMessage event:", { groupId, senderId, content, type });
+        
             try {
-                const req = { params: { groupId }, body: { content }, user: { id: senderId } };
+                const req = { params: { groupId }, body: { content, type }, user: { id: senderId } };
                 const res = {
                     status: () => res,
                     json: (message) => {
-                        const messageWithSender = { ...message, sender: { _id: senderId }, content };
+                        const messageWithSender = { ...message, sender: { _id: senderId }, content, type };
                         io.to(groupId).emit("receiveMessage", messageWithSender);
                         socket.emit("messageSent", messageWithSender);
                     }
@@ -50,6 +50,30 @@ function initializeSocket(server) {
                 console.error("Error sending message:", error);
             }
         });
+        
+        
+
+        socket.on("uploadFile", async ({ fileUrl, fileName, fileType, userId, groupId }) => {
+            if (!fileUrl || !fileName || !fileType || !userId || !groupId) return;
+
+            try {
+                const req = { params: { groupId }, body: { content: fileUrl, type: fileType }, user: { id: userId } };
+                const res = {
+                    status: () => res,
+                    json: (message) => {
+                        io.to(groupId).emit("receiveMessage", {
+                            ...message, sender: { _id: userId }, content: fileUrl, type: fileType
+                        });
+                    }
+                };
+                await sendMessage(req, res);
+            } catch (error) {
+                console.error("Error processing uploaded file:", error);
+            }
+        });
+
+        
+          
         
         socket.on('disconnect', () => {
             console.log('User disconnected:', socket.id);
