@@ -1,6 +1,6 @@
 const Group = require('../models/Group');
 const Item = require('../models/Item');
-const {generateSasUrl,uploadCompressedImage}=require("../services/azureService");
+const { generateSasUrl, uploadCompressedImage } = require("../services/azureService");
 // Send Message to Group
 exports.sendMessage = async (req, res) => {
     try {
@@ -36,7 +36,7 @@ exports.sendMessage = async (req, res) => {
 exports.getGroupMessages = async (req, res) => {
     try {
         const { groupId } = req.params;
-        
+
         const group = await Group.findById(groupId).populate({
             path: 'items',
             match: { type: { $in: ['message', 'image'] } },
@@ -60,7 +60,7 @@ exports.getGroupMessages = async (req, res) => {
             }
             return item;
         }));
-        
+
 
         res.status(200).json(updatedItems);
     } catch (error) {

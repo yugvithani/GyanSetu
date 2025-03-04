@@ -12,11 +12,12 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
   const handleFileUpload = async (type) => {
     setUploading(true); // Ensure this is called
     // console.log("Starting file upload...");
-  
+
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = type === "image" ? "image/*" : type === "video" ? "video/*" : "*/*";
-  
+    input.accept =
+      type === "image" ? "image/*" : type === "video" ? "video/*" : "*/*";
+
     input.onchange = async (event) => {
       const file = event.target.files[0];
       if (!file) {
@@ -24,15 +25,15 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
         setUploading(false);
         return;
       }
-  
+
       // console.log("File selected:", file.name);
-  
+
       try {
         const formData = new FormData();
         formData.append("file", file);
-  
+
         // console.log("Uploading file to backend...");
-  
+
         const response = await axios.post(
           `${BASE_URL}/chat/${groupId}/upload`,
           formData,
@@ -42,18 +43,18 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
             },
           }
         );
-  
+
         // console.log("Upload response:", response.data);
-  
+
         const { url } = response.data;
         if (!url) {
           console.error("No URL returned from backend.");
           alert("File upload failed: No URL returned.");
           return;
         }
-  
+
         // console.log("File uploaded successfully. URL:", url);
-  
+
         // Emit the message with the file URL
         socket.emit("sendMessage", {
           groupId,
@@ -61,7 +62,7 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
           content: url,
           type: "image",
         });
-  
+
         // console.log("Message emitted with file URL.");
       } catch (error) {
         console.error("File upload error:", error);
@@ -71,7 +72,7 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
         // console.log("Uploading state set to false.");
       }
     };
-  
+
     input.click();
   };
 
@@ -94,8 +95,16 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
           >
             {[
               { icon: <FaImage size={18} />, label: "Image", type: "image" },
-              { icon: <FaFileAlt size={18} />, label: "Material", type: "material" },
-              { icon: <FaVideo size={18} />, label: "StudySession", type: "video" },
+              {
+                icon: <FaFileAlt size={18} />,
+                label: "Material",
+                type: "material",
+              },
+              {
+                icon: <FaVideo size={18} />,
+                label: "StudySession",
+                type: "video",
+              },
             ].map((btn, index) => (
               <div key={index} className="relative flex flex-col items-center">
                 <button
@@ -126,12 +135,12 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
       </AnimatePresence>
 
       {uploading && (
-  <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg">
-      <p>Uploading image...</p>
-    </div>
-  </div>
-)}
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <p>Uploading image...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
