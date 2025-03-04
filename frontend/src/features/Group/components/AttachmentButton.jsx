@@ -7,57 +7,73 @@ import BASE_URL from "../../../config";
 const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [hovered, setHovered] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleFileUpload = async (type) => {
+    setUploading(true); // Ensure this is called
+    // console.log("Starting file upload...");
+  
     const input = document.createElement("input");
     input.type = "file";
     input.accept = type === "image" ? "image/*" : type === "video" ? "video/*" : "*/*";
-
+  
     input.onchange = async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("type", type);
-
-            console.log("Uploading file:", file.name);
-
-            // Upload file to backend
-            const response = await axios.post(
-                `${BASE_URL}/chat/${groupId}/upload`,
-                formData,
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-
-            const { url } = response.data; // Extracting correctly
-            console.log("Uploaded URL:", url);
-            if (!url) {
-                alert("File upload failed");
-                return;
-            }
-
-            // Emit socket event with the file URL
-            socket.emit("uploadFile", {
-                fileUrl: url,
-                fileName: file.name,
-                fileType: type,
-                userId,
-                groupId,
-            });
-        } catch (error) {
-            console.error("File upload error:", error);
-            alert("File upload failed");
+      const file = event.target.files[0];
+      if (!file) {
+        // console.log("No file selected.");
+        setUploading(false);
+        return;
+      }
+  
+      // console.log("File selected:", file.name);
+  
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+  
+        // console.log("Uploading file to backend...");
+  
+        const response = await axios.post(
+          `${BASE_URL}/chat/${groupId}/upload`,
+          formData,
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+  
+        // console.log("Upload response:", response.data);
+  
+        const { url } = response.data;
+        if (!url) {
+          console.error("No URL returned from backend.");
+          alert("File upload failed: No URL returned.");
+          return;
         }
+  
+        // console.log("File uploaded successfully. URL:", url);
+  
+        // Emit the message with the file URL
+        socket.emit("sendMessage", {
+          groupId,
+          senderId: userId,
+          content: url,
+          type: "image",
+        });
+  
+        // console.log("Message emitted with file URL.");
+      } catch (error) {
+        console.error("File upload error:", error);
+        alert("File upload failed.");
+      } finally {
+        setUploading(false); // Ensure this is called
+        // console.log("Uploading state set to false.");
+      }
     };
-
+  
     input.click();
-};
+  };
 
   return (
     <div className="relative">
@@ -108,6 +124,14 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {uploading && (
+  <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg">
+      <p>Uploading image...</p>
+    </div>
+  </div>
+)}
     </div>
   );
 };

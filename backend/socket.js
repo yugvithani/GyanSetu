@@ -32,45 +32,49 @@ function initializeSocket(server) {
         });
 
         socket.on("sendMessage", async ({ groupId, senderId, content, type }) => {
-            if (!groupId || !senderId || !content || !type) return;
+            if (!groupId || !senderId || !content || !type) {
+              console.error("Invalid sendMessage event:", { groupId, senderId, content, type });
+              return;
+            }
+          
             console.log("Received sendMessage event:", { groupId, senderId, content, type });
-        
+          
             try {
-                const req = { params: { groupId }, body: { content, type }, user: { id: senderId } };
-                const res = {
-                    status: () => res,
-                    json: (message) => {
-                        const messageWithSender = { ...message, sender: { _id: senderId }, content, type };
-                        io.to(groupId).emit("receiveMessage", messageWithSender);
-                        socket.emit("messageSent", messageWithSender);
-                    }
-                };
-                await sendMessage(req, res);
+              const req = { params: { groupId }, body: { content, type }, user: { id: senderId } };
+              const res = {
+                status: () => res,
+                json: (message) => {
+                  const messageWithSender = { ...message, sender: { _id: senderId }, content, type };
+                  console.log("Broadcasting receiveMessage:", messageWithSender);
+                  io.to(groupId).emit("receiveMessage", messageWithSender);
+                  socket.emit("messageSent", messageWithSender);
+                }
+              };
+              await sendMessage(req, res);
             } catch (error) {
-                console.error("Error sending message:", error);
+              console.error("Error sending message:", error);
             }
-        });
-        
+          });
         
 
-        socket.on("uploadFile", async ({ fileUrl, fileName, fileType, userId, groupId }) => {
-            if (!fileUrl || !fileName || !fileType || !userId || !groupId) return;
+        // socket.on("uploadFile", async ({ fileUrl, fileName, fileType, userId, groupId }) => {
+        //     if (!fileUrl || !fileName || !fileType || !userId || !groupId) return;
 
-            try {
-                const req = { params: { groupId }, body: { content: fileUrl, type: fileType }, user: { id: userId } };
-                const res = {
-                    status: () => res,
-                    json: (message) => {
-                        io.to(groupId).emit("receiveMessage", {
-                            ...message, sender: { _id: userId }, content: fileUrl, type: fileType
-                        });
-                    }
-                };
-                await sendMessage(req, res);
-            } catch (error) {
-                console.error("Error processing uploaded file:", error);
-            }
-        });
+        //     try {
+        //         const req = { params: { groupId }, body: { content: fileUrl, type: fileType }, user: { id: userId } };
+        //         const res = {
+        //             status: () => res,
+        //             json: (message) => {
+        //                 io.to(groupId).emit("receiveMessage", {
+        //                     ...message, sender: { _id: userId }, content: fileUrl, type: fileType
+        //                 });
+        //             }
+        //         };
+        //         await sendMessage(req, res);
+        //     } catch (error) {
+        //         console.error("Error processing uploaded file:", error);
+        //     }
+        // });
 
         
           

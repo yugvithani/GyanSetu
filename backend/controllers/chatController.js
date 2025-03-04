@@ -49,9 +49,9 @@ exports.getGroupMessages = async (req, res) => {
             if (item.type[0] === 'image' && item.content) {
                 try {
                     const blobName = (item.content).split("/").pop().split('?')[0];
-                    console.log("file url: \n",blobName);
+                    // console.log("file url: \n",blobName);
                     const sasUrl = await generateSasUrl(blobName);
-                    console.log(sasUrl);
+                    // console.log(sasUrl);
                     return { ...item.toObject(), content: sasUrl };
                 } catch (error) {
                     console.error("SAS URL generation failed:", error);
@@ -75,11 +75,11 @@ exports.uploadFile = async (req, res) => {
             return res.status(400).json({ error: "No file provided" });
         }
 
-        console.log("Uploading file:", req.file.originalname);
+        // console.log("Uploading file:", req.file.originalname);
 
         // Upload the file and get the URL
         const fileUrl = await uploadCompressedImage(req.file);
-        console.log("Uploading file:", fileUrl);
+        // console.log("Uploading file:", fileUrl);
         if (!fileUrl) {
             return res.status(500).json({ error: "File upload failed" });
         }
