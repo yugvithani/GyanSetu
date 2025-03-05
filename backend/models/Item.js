@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const ItemSchema = new mongoose.Schema({
-    type: [{ type: String, enum: ['message', 'material', 'session'], required: true }],
+    type: [{ type: String, enum: ['message', 'material', 'session','image'], required: true }],
     content: { type: String },
     timestamp: { type: Date, default: Date.now },
     sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },

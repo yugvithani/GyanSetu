@@ -18,7 +18,9 @@ const containerClient = blobServiceClient.getContainerClient(CONTAINER_NAME);
 // Upload and compress image to Azure Blob Storage
 const uploadCompressedImage = async (file) => {
   try {
+    // file.originalname=file.name;
     let imageBuffer = file.buffer;
+    console.log(file.originalname);
     const originalSize = file.size / (1024 * 1024);
 
     if (originalSize > 3) {

@@ -102,6 +102,7 @@ const UserProfile = () => {
       if (selectedFile) {
         formData.append('profilePicture', selectedFile); // Send the selected file to the backend if change
       }
+      console.log(selectedFile);
       const response = await axios.put(`${BASE_URL}/user/profile`, formData, {
         headers: {
           authorization: `Bearer ${localStorage.getItem('token')}`, // axios take content type auto
