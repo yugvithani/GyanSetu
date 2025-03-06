@@ -50,7 +50,7 @@ const GroupSettingsPage = () => {
           headers: { authorization: `Bearer ${token}` },
         });
         setCurrentUser(userResponse.data);
-        console.log(response.data.members);
+        // console.log(response.data.members);
         const memberDetailsPromises = response.data.members.map(
           async (memberId) => {
             const memberResponse = await axios.get(

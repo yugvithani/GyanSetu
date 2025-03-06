@@ -40,6 +40,7 @@ exports.getMaterials = async (req, res) => {
 exports.deleteMaterial = async (req, res) => {
   try {
     const { materialId } = req.params;
+    
     const material = await Item.findById(materialId);
     if (!material) {
       return res.status(404).json({ error: "Material not found" });
@@ -47,6 +48,7 @@ exports.deleteMaterial = async (req, res) => {
 
     // Extract blob name and delete from Azure
     const blobName = material.content.split('/').pop().split('?')[0];
+    // console.log(blobName)
     await deleteFileFromAzure(blobName,'materials');
 
     // Remove material from related groups

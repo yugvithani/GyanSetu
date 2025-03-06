@@ -5,6 +5,6 @@ const { verifyToken } = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 router.get("/:groupId", verifyToken, getMaterials);
-router.delete("/:id", verifyToken, deleteMaterial);
+router.delete("/:materialId", verifyToken, deleteMaterial);
 
 module.exports = router;

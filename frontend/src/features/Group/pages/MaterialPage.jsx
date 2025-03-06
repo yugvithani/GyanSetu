@@ -9,6 +9,8 @@ const MaterialPage = () => {
   const [materials, setMaterials] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("latest");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [groupInfo, setGroupInfo] = useState({ });
 
   useEffect(() => {
     if (!groupId) return; // Ensure groupId exists before making a request
@@ -19,12 +21,32 @@ const MaterialPage = () => {
           headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setMaterials(response.data);
+        const userResponse = await axios.get(`${BASE_URL}/user/getId`, {
+          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setCurrentUser(userResponse.data);
+        console.log(userResponse.data);
       } catch (error) {
         console.error("Error fetching materials:", error);
       }
     };
 
+    
+
+    const fetchGroupInfo = async () => {
+      try {
+        const groupResponse = await axios.get(`${BASE_URL}/groups/${groupId}`, {
+          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setGroupInfo(groupResponse.data);
+        console.log(groupResponse.data);
+      } catch (error) {
+        console.error("Error fetching group info:", error);
+      }
+    };
+
     fetchMaterials();
+    fetchGroupInfo();
   }, [groupId]);
 
   const handleDelete = async (id) => {
@@ -52,6 +74,11 @@ const MaterialPage = () => {
         ? new Date(b.createdAt) - new Date(a.createdAt)
         : new Date(a.createdAt) - new Date(b.createdAt)
     );
+
+  useEffect(() => {
+    // console.log("Current User ID:", currentUser);
+    // console.log("Group Admin ID:", groupInfo.admin);
+  }, [currentUser, groupInfo]);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -105,12 +132,14 @@ const MaterialPage = () => {
                 ) : (
                   <span className="text-gray-500 text-sm">No file available</span>
                 )}
-                <button
-                  onClick={() => handleDelete(material._id)}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <HiTrash className="text-xl" />
-                </button>
+                {currentUser === groupInfo.admin && (
+                  <button
+                    onClick={() => handleDelete(material._id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <HiTrash className="text-xl" />
+                  </button>
+                )}
               </div>
             </div>
           ))
