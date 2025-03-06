@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const { uploadCompressedImage, generateSasUrl, deleteImageFromAzure } = require("../services/azureService");
+const { uploadCompressedImage, generateSasUrl, deleteFileFromAzure } = require("../services/azureService");
 
 exports.getUserId = async (req, res) => {
   res.status(200).json(req.user.id);
@@ -54,7 +54,7 @@ exports.updateProfile = async (req, res) => {
       if (user.profilePicture && newProfilePictureUrl !== user.profilePicture) {
         // Extract old image file name and delete from Azure
         const oldBlobName = user.profilePicture.split("/").pop().split("?")[0];
-        await deleteImageFromAzure(oldBlobName);
+        await deleteFileFromAzure(oldBlobName);
       }
 
       profilePictureUrl = newProfilePictureUrl;
