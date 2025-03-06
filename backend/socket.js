@@ -12,7 +12,7 @@ function initializeSocket(server) {
     });
 
     io.on('connection', (socket) => {
-        console.log('User connected:', socket.id);
+        // console.log('User connected:', socket.id);
 
         socket.on('joinGroup', ({ groupId, userId }) => {
             if (!groupId || !userId) return;
@@ -68,7 +68,7 @@ function initializeSocket(server) {
         });
     });
 
-    console.log('Socket.io initialized');
+    // console.log('Socket.io initialized');
 }
 
 module.exports = { initializeSocket };
