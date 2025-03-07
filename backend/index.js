@@ -8,6 +8,8 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const groupRoutes = require('./routes/groupRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const materialRoutes = require("./routes/materialRoutes");
+
 
 const app = express();
 const server = http.createServer(app); 
@@ -29,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/chat', chatRoutes);
+app.use("/api/materials", materialRoutes);
 
 // Initialize Socket.io
 initializeSocket(server);

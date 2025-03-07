@@ -12,11 +12,11 @@ function initializeSocket(server) {
     });
 
     io.on('connection', (socket) => {
-        console.log('User connected:', socket.id);
+        // console.log('User connected:', socket.id);
 
         socket.on('joinGroup', ({ groupId, userId }) => {
             if (!groupId || !userId) return;
-            console.log(`User ${userId} joined group ${groupId}`);
+            // console.log(`User ${userId} joined group ${groupId}`);
 
             // Disconnect previous socket if the user is already connected
             if (activeUsers.has(userId)) {
@@ -31,21 +31,21 @@ function initializeSocket(server) {
             socket.join(groupId);
         });
 
-        socket.on("sendMessage", async ({ groupId, senderId, content, type }) => {
+        socket.on("sendMessage", async ({ groupId, senderId, content, type,name }) => {
             if (!groupId || !senderId || !content || !type) {
                 console.error("Invalid sendMessage event:", { groupId, senderId, content, type });
                 return;
             }
 
-            console.log("Received sendMessage event:", { groupId, senderId, content, type });
+            // console.log("Received sendMessage event:", { groupId, senderId, content, type });
 
             try {
-                const req = { params: { groupId }, body: { content, type }, user: { id: senderId } };
+                const req = { params: { groupId }, body: { content, type, name }, user: { id: senderId } };
                 const res = {
                     status: () => res,
                     json: (message) => {
-                        const messageWithSender = { ...message, sender: { _id: senderId }, content, type };
-                        console.log("Broadcasting receiveMessage:", messageWithSender);
+                        const messageWithSender = { ...message, sender: { _id: senderId }, content, type,name };
+                        // console.log("Broadcasting receiveMessage:", messageWithSender);
                         io.to(groupId).emit("receiveMessage", messageWithSender);
                         socket.emit("messageSent", messageWithSender);
                     }
@@ -58,7 +58,7 @@ function initializeSocket(server) {
 
 
         socket.on('disconnect', () => {
-            console.log('User disconnected:', socket.id);
+            // console.log('User disconnected:', socket.id);
             for (const [userId, sockId] of activeUsers.entries()) {
                 if (sockId === socket.id) {
                     activeUsers.delete(userId);
@@ -68,7 +68,7 @@ function initializeSocket(server) {
         });
     });
 
-    console.log('Socket.io initialized');
+    // console.log('Socket.io initialized');
 }
 
 module.exports = { initializeSocket };

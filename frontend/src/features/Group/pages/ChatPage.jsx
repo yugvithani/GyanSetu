@@ -4,6 +4,8 @@ import { io } from "socket.io-client";
 import axios from "axios";
 import BASE_URL from "../../../config";
 import AttachmentButton from "./../components/AttachmentButton";
+import { HiDocumentText } from "react-icons/hi";
+
 
 const SOCKET_URL = BASE_URL.replace("/api", "");
 
@@ -60,7 +62,6 @@ const ChatPage = () => {
     newSocket.emit("joinGroup", { groupId, userId });
 
     newSocket.on("receiveMessage", (message) => {
-      // console.log("Received new message via socket:", message); // Add this log
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
@@ -69,6 +70,7 @@ const ChatPage = () => {
       newSocket.disconnect();
     };
   }, [groupId, userId]);
+
   // Fetch existing messages for the group
   useEffect(() => {
     axios
@@ -76,8 +78,7 @@ const ChatPage = () => {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {
-        setMessages(response.data); // Set messages without sender names initially
-        // console.log(response.data);
+        setMessages(response.data);
       })
       .catch((error) => console.error("Error fetching messages:", error));
   }, [groupId]);
@@ -116,63 +117,87 @@ const ChatPage = () => {
   return (
     <div className="flex-1 flex flex-col h-full p-6 bg-gray-100">
       <div className="flex-1 overflow-y-auto space-y-4 px-4 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-300">
-        {messages.length > 0 ? (
-          messages.map((msg, index) => {
-            // console.log("Rendering message:", msg); // Add this log
-            const isSentByUser = msg.sender?._id === userId;
-            const displayName = isSentByUser
-              ? "You"
-              : senderNames.get(msg.sender?._id) || "Loading...";
+      {messages.length > 0 ? (
+  messages.map((msg, index) => {
+    const isSentByUser = msg.sender?._id === userId;
+    const displayName = isSentByUser
+      ? "You"
+      : senderNames.get(msg.sender?._id) || "Loading...";
 
-            if (!isSentByUser && !senderNames.has(msg.sender?._id)) {
-              fetchSenderName(msg.sender?._id).then((name) => {
-                setSenderNames((prev) =>
-                  new Map(prev).set(msg.sender?._id, name)
-                );
-              });
-            }
+    if (!isSentByUser && !senderNames.has(msg.sender?._id)) {
+      fetchSenderName(msg.sender?._id).then((name) => {
+        setSenderNames((prev) =>
+          new Map(prev).set(msg.sender?._id, name)
+        );
+      });
+    }
 
-            return (
-              <div
-                key={index}
-                className={`flex ${
-                  isSentByUser ? "justify-end" : "justify-start"
-                } px-2`}
-              >
-                <div
-                  className={`p-4 max-w-md rounded-2xl shadow-md text-lg transition-transform transform hover:scale-105 relative group ${
-                    isSentByUser
-                      ? "bg-blue-600 text-white ml-8 rounded-br-none"
-                      : "bg-gray-200 text-black mr-8 rounded-bl-none"
-                  }`}
-                >
-                  <p className="text-xs font-semibold opacity-75 mb-1">
-                    {displayName}
-                  </p>
-                  {msg.type[0] === "image" || msg.type == "image" ? (
-                    <a
-                      href={msg.content}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={msg.content}
-                        alt="Sent image"
-                        className="rounded-lg max-w-full h-auto mt-2 cursor-pointer hover:opacity-80 transition-opacity"
-                      />
-                    </a>
-                  ) : (
-                    <p className="text-md">{msg.content}</p>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="flex justify-center items-center h-full">
-            <p className="text-gray-500 text-center italic">No messages yet.</p>
+    // Truncate file name if too long (max 12 chars + "...")
+    const truncatedName = msg.name && msg.name.length > 12 
+      ? msg.name.substring(0, 12) + "..." 
+      : msg.name;
+
+    return (
+      <div
+        key={index}
+        className={`flex ${
+          isSentByUser ? "justify-end" : "justify-start"
+        } px-2`}
+      >
+        <div
+          className={`p-4 max-w-md rounded-2xl shadow-md text-lg transition-transform transform hover:scale-105 relative group ${
+            isSentByUser
+              ? "bg-blue-600 text-white ml-8 rounded-br-none"
+              : "bg-gray-200 text-black mr-8 rounded-bl-none"
+          }`}
+        >
+          <p className="text-xs font-semibold opacity-75 mb-1">
+            {displayName}
+          </p>
+
+          {msg.type === "material" || msg.type[0]==="material" ? (
+            <a
+            href={msg.content}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center space-x-3 bg-white p-3 rounded-lg shadow-md cursor-pointer"
+          >
+            <div className="flex items-center space-x-3 bg-white p-3 rounded-lg shadow-md ">
+            <HiDocumentText className="text-blue-500 text-2xl" />
+            <span className="text-blue-400 font-semibold">{truncatedName}</span>
           </div>
-        )}
+          </a>
+          ) : msg.type === "image" || msg.type[0]==="image" ? (
+            <a
+              href={msg.content}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={msg.content}
+                alt="Sent image"
+                className="rounded-lg max-w-full h-auto mt-2 cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </a>
+          ) : msg.type === "video" ? (
+            <video
+              src={msg.content}
+              controls
+              className="rounded-lg max-w-full h-auto mt-2"
+            />
+          ) : (
+            <p className="text-md">{msg.content}</p>
+          )}
+        </div>
+      </div>
+    );
+  })
+) : (
+  <div className="flex justify-center items-center h-full">
+    <p className="text-gray-500 text-center italic">No messages yet.</p>
+  </div>
+)}
+
         <div ref={messagesEndRef} />
       </div>
 
