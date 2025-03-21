@@ -5,6 +5,8 @@
   import "react-toastify/dist/ReactToastify.css";
   import { useNavigate } from "react-router-dom"; 
   import BASE_URL from "../config";
+  import { useActivity } from "../contexts/ActivityContext";
+
 
   const GroupList = () => {
     const [showForm, setShowForm] = useState(false);
@@ -18,6 +20,7 @@
     const [groups, setGroups] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const { logActivity } = useActivity();
 
     useEffect(() => {
       const fetchGroups = async () => {
@@ -82,6 +85,9 @@
           theme: "light",
           style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
         });
+
+        logActivity("Group",`created group ${groupData.name}`)
+
       } catch (error) {
         toast.update(toastId, {
           render: error.response?.data?.error || "Error creating group",
@@ -124,6 +130,9 @@
           theme: "light",
           style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
         });
+        
+        logActivity("Group",`Join group ${response.data.name}`)
+
       } catch (error) {
         toast.update(toastId, {
           render: error.response?.data?.error || "Error joining group",
