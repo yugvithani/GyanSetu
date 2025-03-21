@@ -10,7 +10,7 @@ const MaterialPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("latest");
   const [currentUser, setCurrentUser] = useState(null);
-  const [groupInfo, setGroupInfo] = useState({ });
+  const [groupInfo, setGroupInfo] = useState({});
 
   useEffect(() => {
     if (!groupId) return; // Ensure groupId exists before making a request
@@ -31,8 +31,6 @@ const MaterialPage = () => {
       }
     };
 
-    
-
     const fetchGroupInfo = async () => {
       try {
         const groupResponse = await axios.get(`${BASE_URL}/groups/${groupId}`, {
@@ -50,10 +48,15 @@ const MaterialPage = () => {
   }, [groupId]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this material?")) return;
+    if (!window.confirm("Are you sure you want to delete this material?"))
+      return;
     try {
       await axios.delete(`${BASE_URL}/materials/${id}`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
+        data: {
+          adminId: groupInfo.admin,
+          senderId: currentUser,
+        },
       });
       setMaterials((prev) => prev.filter((item) => item._id !== id));
     } catch (error) {
@@ -62,7 +65,9 @@ const MaterialPage = () => {
   };
 
   const truncateText = (text, maxLength) => {
-    return text?.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    return text?.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
   };
 
   const filteredMaterials = materials
@@ -117,7 +122,9 @@ const MaterialPage = () => {
                 Sent by: {material.senderName || "Unknown"}
               </p>
               <p className="text-xs text-gray-400">
-                {material.createdAt ? new Date(material.createdAt).toLocaleString() : "Unknown Date"}
+                {material.createdAt
+                  ? new Date(material.createdAt).toLocaleString()
+                  : "Unknown Date"}
               </p>
               <div className="flex justify-between items-center mt-2">
                 {material.fileUrl ? (
@@ -130,7 +137,9 @@ const MaterialPage = () => {
                     View Material
                   </a>
                 ) : (
-                  <span className="text-gray-500 text-sm">No file available</span>
+                  <span className="text-gray-500 text-sm">
+                    No file available
+                  </span>
                 )}
                 {currentUser === groupInfo.admin && (
                   <button
@@ -144,7 +153,9 @@ const MaterialPage = () => {
             </div>
           ))
         ) : (
-          <p className="text-gray-500 text-center col-span-3">No materials found.</p>
+          <p className="text-gray-500 text-center col-span-3">
+            No materials found.
+          </p>
         )}
       </div>
     </div>
