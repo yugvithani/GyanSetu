@@ -4,6 +4,7 @@ import BASE_URL from '../config';
 import { FiUser } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { Camera } from "lucide-react";
+import { useActivity } from "../contexts/ActivityContext";
 
 const UserProfile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -14,6 +15,7 @@ const UserProfile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
   const defaultProfilePic = 'https://th.bing.com/th/id/OIP.seJIU6-wCa7OtTYHR85z3QHaHa?w=165&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7';// change
+  const { logActivity } = useActivity();
 
   // Fetch user profile data
   const fetchUserProfile = async () => {
@@ -112,6 +114,8 @@ const UserProfile = () => {
       console.log('Update response:', response.data);
       setShowEditModal(false);
       fetchUserProfile(); // Refresh user profile after submission
+
+      logActivity('Profile', 'Edited user profile'); // Log activity
     } catch (error) {
       console.error('Response data:', error.response?.data);
     }
@@ -123,7 +127,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative z-50" ref={dropdownRef}>
 
       <div className="relative group">
         <div

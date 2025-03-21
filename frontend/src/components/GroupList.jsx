@@ -87,7 +87,7 @@
         });
 
         logActivity("Group",`created group ${groupData.name}`)
-        
+
       } catch (error) {
         toast.update(toastId, {
           render: error.response?.data?.error || "Error creating group",
@@ -130,6 +130,9 @@
           theme: "light",
           style: { background: "white", color: "black", fontWeight: "bold", borderRadius: "10px" }
         });
+        
+        logActivity("Group",`Join group ${response.data.name}`)
+
       } catch (error) {
         toast.update(toastId, {
           render: error.response?.data?.error || "Error joining group",
