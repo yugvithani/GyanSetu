@@ -23,10 +23,10 @@ function RecentActivity() {
     }, []);
 
     return (
-        <div className="w-1/3 bg-white rounded-2xl shadow-md p-6">
+        <div className="w-1/3 bg-white rounded-2xl shadow-md p-6 ">
             <h2 className="text-lg font-semibold text-blue-600">Recent Activities</h2>
             {/* Scrollable List with Fixed Height */}
-            <ul className="mt-4 space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-gray-200">
+            <ul className="mt-4 space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-400 scrollbar-track-gray-200 mt-6 space-y-4 overflow-y-auto flex-1 max-h-[650px]">
                 {activities.length > 0 ? (
                     activities.map((activity, index) => (
                         <li
