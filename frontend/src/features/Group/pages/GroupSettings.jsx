@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import axios from "axios";
 import BASE_URL from "../../../config";
+import { useActivity } from "../../../contexts/ActivityContext";
 
 const GroupSettingsPage = () => {
   const { groupId } = useParams();
@@ -29,6 +30,7 @@ const GroupSettingsPage = () => {
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDescription, setNewGroupDescription] = useState("");
   const [currentUser, setCurrentUser] = useState(null); // Store current user
+  const { logActivity } = useActivity();
 
   useEffect(() => {
     const fetchGroupDetails = async () => {
@@ -104,6 +106,8 @@ const GroupSettingsPage = () => {
       );
       setGroupInfo((prevState) => ({ ...prevState, name: newGroupName }));
       setIsEditingName(false);
+      logActivity("Group",`Edited ${groupInfo.name} group details`);
+
     } catch (error) {
       console.error("Error updating group name", error);
     }
@@ -124,6 +128,8 @@ const GroupSettingsPage = () => {
         description: newGroupDescription,
       }));
       setIsEditingDescription(false);
+      logActivity("Group",`Edited ${groupInfo.name} group details`);
+
     } catch (error) {
       console.error("Error updating group description", error);
     }
@@ -135,6 +141,8 @@ const GroupSettingsPage = () => {
       await axios.delete(`${BASE_URL}/groups/${groupInfo._id}`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      logActivity("Group",`Delete ${groupInfo.name} group`);
+
       navigate("/home");
     } catch (error) {
       console.error("Error deleting group:", error.response?.data || error.message);
@@ -147,6 +155,8 @@ const GroupSettingsPage = () => {
       await axios.delete(`${BASE_URL}/groups/${groupInfo._id}/exit`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
       });
+      logActivity("Group",`Exit ${newGroupName} group `);
+
       navigate("/home");
     } catch (error) {
       console.error("Error exiting group:", error.response?.data || error.message);
