@@ -176,7 +176,7 @@ const UserProfile = () => {
 
       {/* Edit Profile Modal */}
       {showEditModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center  bg-opacity-50 z-50">
           <div className="bg-gray-900 rounded-lg p-6 w-96 text-white">
             <h2 className="text-xl font-semibold mb-4">Edit Profile</h2>
             <form onSubmit={handleProfileSubmit}>
