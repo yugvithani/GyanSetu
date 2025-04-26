@@ -86,7 +86,18 @@ const MaterialPage = () => {
   }, [currentUser, groupInfo]);
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+
+    <main className="flex flex-1 mt-8 relative">
+      
+      {/* Main Container (Fixed Height) */}
+      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
+        {/* Toggle Buttons */}
+       
+
+        {/* Content Section (Scrollable Inner Pages, Fixed Parent) */}
+        <div className="flex-1 mt-6 overflow-hidden">
+          <div className="h-full overflow-y-auto">
+          <div className="p-6 bg-gray-100 min-h-screen">
       <div className="sticky top-0 z-10 bg-white p-4 shadow-md flex justify-between items-center rounded-md">
         <input
           type="text"
@@ -159,6 +170,13 @@ const MaterialPage = () => {
         )}
       </div>
     </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+   
   );
 };
 

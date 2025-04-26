@@ -5,6 +5,8 @@ import Register from "../src/features/Auth/pages/Register";
 import Home from "../src/pages/Home";
 import Layout from "./pages/Layout";
 import GroupPage from "./features/Group/pages/GroupPage";
+import ChatPage from "./features/Group/pages/ChatPage";
+import MaterialPage from "./features/Group/pages/MaterialPage";
 import GroupSettings from "./features/Group/pages/GroupSettings";
 import ProtectRoute from "./shared/ProtectRoute";
 import { ActivityProvider } from "./contexts/ActivityContext";
@@ -21,7 +23,9 @@ const App = () => {
 
           <Route path="/home" element={<ProtectRoute><Layout><Home /></Layout></ProtectRoute>} />
           <Route path="/group/:groupId" element={<ProtectRoute><Layout><GroupPage /></Layout></ProtectRoute>} />
-          <Route path="/group-settings/:groupId" element={<ProtectRoute><Layout><GroupSettings /></Layout></ProtectRoute>} />
+          <Route path="/group/:groupId/settings" element={<ProtectRoute><Layout><GroupSettings /></Layout></ProtectRoute>} />
+          <Route path="/group/:groupId/chat" element={<ProtectRoute><Layout><ChatPage /></Layout></ProtectRoute>} />
+          <Route path="/group/:groupId/material" element={<ProtectRoute><Layout><MaterialPage /></Layout></ProtectRoute>} />
         </Routes>
       </ActivityProvider>
     </Router>

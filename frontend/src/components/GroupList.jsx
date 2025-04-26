@@ -151,7 +151,7 @@
     };
 
     const handleGroupClick = (groupId) => {
-      navigate(`/group/${groupId}`);
+      navigate(`/group/${groupId}/chat`);
     };
 
     return (

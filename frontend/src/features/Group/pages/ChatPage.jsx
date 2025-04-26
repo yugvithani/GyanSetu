@@ -5,6 +5,7 @@ import axios from "axios";
 import BASE_URL from "../../../config";
 import AttachmentButton from "./../components/AttachmentButton";
 import { HiDocumentText } from "react-icons/hi";
+// import { FiSettings } from "react-icons/fi";
 
 
 const SOCKET_URL = BASE_URL.replace("/api", "");
@@ -17,7 +18,7 @@ const ChatPage = () => {
   const [userId, setUserId] = useState(null);
   const [socket, setSocket] = useState(null);
   const [senderNames, setSenderNames] = useState(new Map()); // Cache for sender names
-
+  const [showTooltip, setShowTooltip] = useState(false);
   // Fetch the current user's ID
   useEffect(() => {
     const fetchUserId = async () => {
@@ -115,7 +116,21 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full p-6 bg-gray-100">
+    
+
+    <main className="flex flex-1 mt-8 relative">
+      
+
+      {/* Main Container (Fixed Height) */}
+      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
+        {/* Toggle Buttons */}
+       
+
+        {/* Content Section (Scrollable Inner Pages, Fixed Parent) */}
+        <div className="flex-1 mt-6 overflow-hidden ">
+          <div className="h-full overflow-y-auto">
+            
+            <div className="flex-1 flex flex-col h-full p-6 bg-gray-100">
       <div className="flex-1 overflow-y-auto space-y-4 px-4 scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-gray-300">
       {messages.length > 0 ? (
   messages.map((msg, index) => {
@@ -223,6 +238,16 @@ const ChatPage = () => {
         </button>
       </div>
     </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+
+
+
+
+   
   );
 };
 
