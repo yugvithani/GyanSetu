@@ -10,7 +10,6 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
   const [uploading, setUploading] = useState(false);
 
   const handleFileUpload = async (type) => {
-    setUploading(true);
 
     const input = document.createElement("input");
     input.type = "file";
@@ -29,6 +28,7 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
             setUploading(false);
             return;
         }
+        setUploading(true);
 
         try {
             const formData = new FormData();
