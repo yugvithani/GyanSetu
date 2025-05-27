@@ -3,8 +3,8 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import BASE_URL from "../../../config";
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -74,13 +74,20 @@ const Register = () => {
       const toastId = toast.loading("Registering...");
 
       try {
-        const response = await axios.post(`${BASE_URL}/auth/register`, {
+        const response = await axios.post(`${VITE_BASE_URL}/auth/register`, {
           name: formData.name,
           email: formData.email,
           password: formData.password,
         });
         const { token } = response.data;
 
+        const userInfo = await axios.get(`${VITE_BASE_URL}/user/profile`, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          }
+        });
+        localStorage.setItem("userInfo", JSON.stringify(userInfo.data)); 
+        
         // Save the token and redirect to home
         localStorage.setItem("token", token);
         axios.defaults.headers.common["authorization"] = `Bearer ${token}`;
@@ -100,8 +107,9 @@ const Register = () => {
 
         navigate("/home"); // Redirect to the home page
       } catch (error) {
+        console.error("Registration error:", error);
         toast.update(toastId, {
-          render: error.response?.data?.error || "Error in Register",
+          render: error.response?.data?.message || "Error in Register",
           type: "error",
           isLoading: false,
           autoClose: 3000,

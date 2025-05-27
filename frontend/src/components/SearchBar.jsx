@@ -2,14 +2,16 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import { FaUserPlus } from "react-icons/fa";
-import BASE_URL from "../config";
+import { useGroups } from "../contexts/GroupContext"; 
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 const SearchBar = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const searchRef = useRef(null);
+  const { setGroups } = useGroups(); 
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -21,7 +23,7 @@ const SearchBar = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${BASE_URL}/groups/search?query=${query}`,
+          `${VITE_BASE_URL}/groups/search?query=${query}`,
           {
             headers: { authorization: `Bearer ${token}` },
           }
@@ -64,10 +66,11 @@ const SearchBar = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        `${BASE_URL}/groups/join`,
+        `${VITE_BASE_URL}/groups/join`,
         { groupCode },
         { headers: { authorization: `Bearer ${token}` } }
       );
+      setGroups((prevGroups) => [...prevGroups, group]);
       toast.update(toastId, {
         render: "Joined group successfully!",
         type: "success",

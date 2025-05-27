@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import BASE_URL from "../../../config";
 import { HiTrash, HiDocumentText } from "react-icons/hi";
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 const MaterialPage = () => {
   const { groupId } = useParams(); // Get groupId from URL
   const [materials, setMaterials] = useState([]);
@@ -17,11 +17,11 @@ const MaterialPage = () => {
 
     const fetchMaterials = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/materials/${groupId}`, {
+        const response = await axios.get(`${VITE_BASE_URL}/materials/${groupId}`, {
           headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setMaterials(response.data);
-        const userResponse = await axios.get(`${BASE_URL}/user/getId`, {
+        const userResponse = await axios.get(`${VITE_BASE_URL}/user/getId`, {
           headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setCurrentUser(userResponse.data);
@@ -33,7 +33,7 @@ const MaterialPage = () => {
 
     const fetchGroupInfo = async () => {
       try {
-        const groupResponse = await axios.get(`${BASE_URL}/groups/${groupId}`, {
+        const groupResponse = await axios.get(`${VITE_BASE_URL}/groups/${groupId}`, {
           headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setGroupInfo(groupResponse.data);
@@ -51,7 +51,7 @@ const MaterialPage = () => {
     if (!window.confirm("Are you sure you want to delete this material?"))
       return;
     try {
-      await axios.delete(`${BASE_URL}/materials/${id}`, {
+      await axios.delete(`${VITE_BASE_URL}/materials/${id}`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
         data: {
           adminId: groupInfo.admin,
@@ -86,6 +86,17 @@ const MaterialPage = () => {
   }, [currentUser, groupInfo]);
 
   return (
+    <main className="flex flex-1 mt-8 relative">
+      
+
+      {/* Main Container (Fixed Height) */}
+      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
+        {/* Toggle Buttons */}
+       
+
+        {/* Content Section (Scrollable Inner Pages, Fixed Parent) */}
+        <div className="flex-1 mt-6 overflow-hidden ">
+          <div className="h-full overflow-y-auto">
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="sticky top-0 z-10 bg-white p-4 shadow-md flex justify-between items-center rounded-md">
         <input
@@ -159,6 +170,10 @@ const MaterialPage = () => {
         )}
       </div>
     </div>
+    </div>
+    </div>
+    </div>
+    </main>
   );
 };
 

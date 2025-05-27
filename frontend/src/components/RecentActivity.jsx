@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import BASE_URL from "../config"; // Ensure this points to your API base URL
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL // Ensure this points to your API base URL
 function RecentActivity() {
     const [activities, setActivities] = useState([]);
 
@@ -9,7 +9,7 @@ function RecentActivity() {
         const fetchActivities = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const response = await axios.get(`${BASE_URL}/activities/all`, {
+                const response = await axios.get(`${VITE_BASE_URL}/activities/all`, {
                     headers: { authorization: `Bearer ${token}` },
                 });
 

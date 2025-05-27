@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
-import BASE_URL from '../config';
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 
 const ProtectRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
@@ -15,7 +15,7 @@ const ProtectRoute = ({ children }) => {
       }
 
       try {
-        const userResponse = await axios.get(`${BASE_URL}/user/getId`, {
+        const userResponse = await axios.get(`${VITE_BASE_URL}/user/getId`, {
           headers: { authorization: `Bearer ${token}` },
         });
 

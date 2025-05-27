@@ -1,7 +1,7 @@
 import { createContext, useContext } from "react";
 import axios from "axios";
 
-import BASE_URL from "../config";
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 
 
 const ActivityContext = createContext();
@@ -13,7 +13,7 @@ export const ActivityProvider = ({ children }) => {
   const logActivity = async (type, content) => {
     try {
       
-      await axios.post(`${BASE_URL}/activities/add`, { type, content}, {
+      await axios.post(`${VITE_BASE_URL}/activities/add`, { type, content}, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
       });
   

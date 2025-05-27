@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import BASE_URL from '../config';
 import { FiUser } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { Camera } from "lucide-react";
 import { useActivity } from "../contexts/ActivityContext";
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 const UserProfile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
@@ -20,7 +20,7 @@ const UserProfile = () => {
   // Fetch user profile data
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/user/profile`, {
+      const response = await axios.get(`${VITE_BASE_URL}/user/profile`, {
         headers: {
           authorization: `Bearer ${localStorage.getItem('token')}`,
         }
@@ -105,7 +105,7 @@ const UserProfile = () => {
         formData.append('profilePicture', selectedFile); // Send the selected file to the backend if change
       }
       console.log(selectedFile);
-      const response = await axios.put(`${BASE_URL}/user/profile`, formData, {
+      const response = await axios.put(`${VITE_BASE_URL}/user/profile`, formData, {
         headers: {
           authorization: `Bearer ${localStorage.getItem('token')}`, // axios take content type auto
         }
@@ -127,7 +127,7 @@ const UserProfile = () => {
   };
 
   return (
-    <div className="relative z-50" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
 
       <div className="relative group">
         <div
@@ -140,7 +140,7 @@ const UserProfile = () => {
 
       {/* Dropdown Menu */}
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg">
+        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50">
           {userInfo ? (
             <div>
               <div className="px-4 py-2 text-gray-700">

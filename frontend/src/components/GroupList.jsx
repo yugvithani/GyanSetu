@@ -4,9 +4,10 @@
   import { ToastContainer, toast } from "react-toastify";
   import "react-toastify/dist/ReactToastify.css";
   import { useNavigate } from "react-router-dom"; 
-  import BASE_URL from "../config";
   import { useActivity } from "../contexts/ActivityContext";
-
+  import { useGroups } from "../contexts/GroupContext"; 
+  
+  const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 
   const GroupList = () => {
     const [showForm, setShowForm] = useState(false);
@@ -17,7 +18,7 @@
       isPrivate: true,
     });
     const [groupCode, setGroupCode] = useState(""); // For the group code input
-    const [groups, setGroups] = useState([]);
+    const {groups, setGroups} = useGroups();
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const { logActivity } = useActivity();
@@ -26,7 +27,7 @@
       const fetchGroups = async () => {
         try {
           const token = localStorage.getItem("token");
-          const response = await axios.get(`${BASE_URL}/groups/all`, {
+          const response = await axios.get(`${VITE_BASE_URL}/groups/all`, {
             headers: { authorization: `Bearer ${token}` },
           });
           setGroups(response.data);
@@ -66,7 +67,7 @@
       try {
         const token = localStorage.getItem("token");
         const response = await axios.post(
-          `${BASE_URL}/groups/create`,
+          `${VITE_BASE_URL}/groups/create`,
           groupData,
           { headers: { authorization: `Bearer ${token}` } }
         );
@@ -111,7 +112,7 @@
       try {
         const token = localStorage.getItem("token");
         const response = await axios.post(
-          `${BASE_URL}/groups/join`,
+          `${VITE_BASE_URL}/groups/join`,
           { groupCode },
           { headers: { authorization: `Bearer ${token}` } }
         );
@@ -151,7 +152,7 @@
     };
 
     const handleGroupClick = (groupId) => {
-      navigate(`/group/${groupId}`);
+      navigate(`/group/${groupId}/chat`);
     };
 
     return (

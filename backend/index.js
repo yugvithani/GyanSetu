@@ -10,6 +10,7 @@ const groupRoutes = require('./routes/groupRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const materialRoutes = require("./routes/materialRoutes");
 const activityRoutes = require('./routes/activityRoutes');
+const sessionRoutes = require('./routes/sessionRoutes')
 
 
 const app = express();
@@ -18,7 +19,7 @@ const server = http.createServer(app);
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/yourdb';
 
 // Connect to MongoDB
@@ -34,6 +35,7 @@ app.use('/api/groups', groupRoutes);
 app.use('/api/chat', chatRoutes);
 app.use("/api/materials", materialRoutes);
 app.use('/api/activities', activityRoutes);
+app.use('/api/session', sessionRoutes)
 
 // Initialize Socket.io
 initializeSocket(server);

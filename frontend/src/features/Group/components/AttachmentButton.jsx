@@ -2,74 +2,99 @@ import React, { useState } from "react";
 import { FaPaperclip, FaImage, FaFileAlt, FaVideo } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-import BASE_URL from "../../../config";
+import { createMeeting } from "../../../services/videosdkApi"; // adjust the path as needed
+import { useNavigate } from 'react-router-dom';
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
+const authToken = import.meta.env.VITE_AUTH_TOKEN
 const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [hovered, setHovered] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [showSessionPopup, setShowSessionPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
+  // For image and material options, use file upload as before.
   const handleFileUpload = async (type) => {
-    setUploading(true);
-
     const input = document.createElement("input");
     input.type = "file";
 
     if (type === "image") {
-        input.accept = "image/*";
-    } else if (type === "video") {
-        input.accept = "video/*";
+      input.accept = "image/*";
     } else {
-        input.accept = ".pdf,.doc,.docx,.txt,.ppt,.pptx"; // Material files
+      input.accept = ".pdf,.doc,.docx,.txt,.ppt,.pptx";
     }
 
     input.onchange = async (event) => {
-        const file = event.target.files[0];
-        if (!file) {
-            setUploading(false);
-            return;
+      const file = event.target.files[0];
+      // If no file is selected, simply return.
+      if (!file) {
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", type);
+
+        const response = await axios.post(
+          `${VITE_BASE_URL}/chat/${groupId}/upload`,
+          formData,
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        const { url } = response.data;
+        if (!url) {
+          alert("File upload failed: No URL returned.");
+          return;
         }
 
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("type", type); 
-
-            const response = await axios.post(
-                `${BASE_URL}/chat/${groupId}/upload`,
-                formData,
-                {
-                    headers: {
-                        authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
-            );
-
-            const { url } = response.data;
-            if (!url) {
-                alert("File upload failed: No URL returned.");
-                return;
-            }
-
-            // Emit the correct message type
-            socket.emit("sendMessage", {
-                groupId,
-                senderId: userId,
-                name: file.name,
-                content: url,
-                type: type, // Ensure backend properly distinguishes "material"
-            });
-        } catch (error) {
-            console.error("File upload error:", error);
-            alert("File upload failed.");
-        } finally {
-            setUploading(false);
-        }
+        // Emit the message via the socket.
+        socket.emit("sendMessage", {
+          groupId,
+          senderId: userId,
+          name: file.name,
+          content: url,
+          type: type, // "image" or "material"
+        });
+      } catch (error) {
+        console.error("File upload error:", error);
+        alert("File upload failed.");
+      }
     };
 
     input.click();
-};
+  };
 
+  // This function is called when the user confirms session creation.
+  const handleCreateMeeting = async () => {
+    setLoading(true);
+    try {
+      // Use the provided createMeeting API call.
+      const sessionId = await createMeeting();
+      // Redirect the user to the speaker view route. For example:
+      // window.location.href = `/session/${sessionId}`;
+      navigate(`/session/${sessionId}`, {
+        state: {
+          meetingId: sessionId,
+          mode: "CONFERENCE",
+          groupId: groupId,
+          userId: userId,
+          isHost: true,
+        },
+      });
+    } catch (error) {
+      console.error("Error creating meeting", error);
+      alert("Failed to create meeting.");
+    } finally {
+      setLoading(false);
+      setShowSessionPopup(false);
+    }
+  };
 
   return (
     <div className="relative">
@@ -98,13 +123,17 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
               {
                 icon: <FaVideo size={18} />,
                 label: "StudySession",
-                type: "video",
+                type: "study",
               },
             ].map((btn, index) => (
               <div key={index} className="relative flex flex-col items-center">
                 <button
                   className="p-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 transition w-10 h-10 flex justify-center items-center"
-                  onClick={() => handleFileUpload(btn.type)}
+                  onClick={() =>
+                    btn.type === "study"
+                      ? setShowSessionPopup(true)
+                      : handleFileUpload(btn.type)
+                  }
                   onMouseEnter={() => setHovered(btn.type)}
                   onMouseLeave={() => setHovered(null)}
                 >
@@ -129,10 +158,27 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
         )}
       </AnimatePresence>
 
-      {uploading && (
-        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <p>Uploading...</p>
+      {/* Popup for creating a meeting (Study Session) */}
+      {showSessionPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg p-6 w-80">
+            <p className="text-lg mb-4">Do you want create a meeting?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                onClick={() => setShowSessionPopup(false)}
+                disabled={loading}
+              >
+                No
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={handleCreateMeeting}
+                disabled={loading}
+              >
+                {loading ? "Creating..." : "Yes"}
+              </button>
+            </div>
           </div>
         </div>
       )}

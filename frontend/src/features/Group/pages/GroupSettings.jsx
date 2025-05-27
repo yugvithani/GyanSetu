@@ -10,9 +10,9 @@ import {
   FiLogOut,
 } from "react-icons/fi";
 import axios from "axios";
-import BASE_URL from "../../../config";
 import { useActivity } from "../../../contexts/ActivityContext";
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 const GroupSettingsPage = () => {
   const { groupId } = useParams();
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const GroupSettingsPage = () => {
     const fetchGroupDetails = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`${BASE_URL}/groups/${groupId}`, {
+        const response = await axios.get(`${VITE_BASE_URL}/groups/${groupId}`, {
           headers: { authorization: `Bearer ${token}` },
         });
 
@@ -48,7 +48,7 @@ const GroupSettingsPage = () => {
         // Now log groupInfo inside a useEffect to see the updated state
         // console.log('Updated groupInfo:', groupInfo);  // groupInfo will be updated after the next render
 
-        const userResponse = await axios.get(`${BASE_URL}/user/getId`, {
+        const userResponse = await axios.get(`${VITE_BASE_URL}/user/getId`, {
           headers: { authorization: `Bearer ${token}` },
         });
         setCurrentUser(userResponse.data);
@@ -56,7 +56,7 @@ const GroupSettingsPage = () => {
         const memberDetailsPromises = response.data.members.map(
           async (memberId) => {
             const memberResponse = await axios.get(
-              `${BASE_URL}/user/${memberId}`,
+              `${VITE_BASE_URL}/user/${memberId}`,
               {
                 headers: { authorization: `Bearer ${token}` },
               }
@@ -82,7 +82,7 @@ const GroupSettingsPage = () => {
   const handleRemoveMember = async (memberId) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${BASE_URL}/groups/${groupId}/member`, {
+      await axios.delete(`${VITE_BASE_URL}/groups/${groupId}/member`, {
         headers: { authorization: `Bearer ${token}` },
         data: { userId: memberId },
       });
@@ -98,7 +98,7 @@ const GroupSettingsPage = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `${BASE_URL}/groups/${groupId}`,
+        `${VITE_BASE_URL}/groups/${groupId}`,
         { name: newGroupName },
         {
           headers: { authorization: `Bearer ${token}` },
@@ -117,7 +117,7 @@ const GroupSettingsPage = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `${BASE_URL}/groups/${groupId}`,
+        `${VITE_BASE_URL}/groups/${groupId}`,
         { description: newGroupDescription },
         {
           headers: { authorization: `Bearer ${token}` },
@@ -138,7 +138,7 @@ const GroupSettingsPage = () => {
 
   const handleDeleteGroup = async () => {
     try {
-      await axios.delete(`${BASE_URL}/groups/${groupInfo._id}`, {
+      await axios.delete(`${VITE_BASE_URL}/groups/${groupInfo._id}`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       logActivity("Group",`Delete ${groupInfo.name} group`);
@@ -152,7 +152,7 @@ const GroupSettingsPage = () => {
   const handleExitGroup = async () => {
     try {
 
-      await axios.delete(`${BASE_URL}/groups/${groupInfo._id}/exit`, {
+      await axios.delete(`${VITE_BASE_URL}/groups/${groupInfo._id}/exit`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       logActivity("Group",`Exit ${newGroupName} group `);

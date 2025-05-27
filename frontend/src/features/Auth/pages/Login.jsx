@@ -3,8 +3,8 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-import BASE_URL from "../../../config";
 
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
 const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -54,9 +54,17 @@ const Login = () => {
       const toastId = toast.loading("Logging in...");
 
       try {
-        const response = await axios.post(`${BASE_URL}/auth/login`, formData);
+        const response = await axios.post(`${VITE_BASE_URL}/auth/login`, formData);
         const { token } = response.data;
 
+        const userInfo = await axios.get(`${VITE_BASE_URL}/user/profile`, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          }
+        });
+        localStorage.setItem("userInfo", JSON.stringify(userInfo.data)); 
+
+        console.log(userInfo.data)
         // Save the token and redirect to home
         localStorage.setItem("token", token);
         axios.defaults.headers.common["authorization"] = `Bearer ${token}`;
