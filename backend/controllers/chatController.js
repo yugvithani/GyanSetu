@@ -34,20 +34,26 @@ exports.sendMessage = async (req, res) => {
     }
 };
 
-// Get All Messages & Attachments for a Group
+// Get All Messages & Attachments for a Group (Paginated)
 exports.getGroupMessages = async (req, res) => {
     try {
         const { groupId } = req.params;
+        const limit = parseInt(req.query.limit) || 50;
+        const skip = parseInt(req.query.skip) || 0;
 
         const group = await Group.findById(groupId).populate({
             path: 'items',
-            match: { type: { $in: ['message', 'image', 'material'] } },
+            match: { type: { $in: ['message', 'image', 'material', 'system'] } },
+            options: { sort: { timestamp: -1 }, limit, skip },
             populate: { path: 'sender', select: 'name' },
         });
 
         if (!group) return res.status(404).json({ error: 'Group not found' });
 
-        const updatedItems = await Promise.all(group.items.map(async (item) => {
+        // Since we sorted by -1 to get the latest, we should reverse them back to chronological order for the frontend
+        const chronologicalItems = group.items.reverse();
+
+        const updatedItems = await Promise.all(chronologicalItems.map(async (item) => {
             if ((item.type[0] === 'image' || item.type[0] === 'material') && item.content) {
                 try {
                     const blobName = (item.content).split("/").pop().split('?')[0];

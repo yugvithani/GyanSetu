@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { FiHome, FiSettings, FiMessageSquare, FiActivity, FiFileText, FiVideo } from "react-icons/fi"; 
+import { FiHome, FiSettings, FiMessageSquare, FiFileText, FiVideo, FiCheckSquare, FiPenTool } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaVideo } from "react-icons/fa";
 
 const SideBar = () => {
     const navigate = useNavigate();
@@ -21,53 +20,85 @@ const SideBar = () => {
         }
     }, [location.pathname]);
 
-    const homeItem = { icon: <FiHome />, label: "Home", path: "/home" };
-    const groupMenuItems = [
-        { icon: <FiMessageSquare />, label: "Chat", path: `/group/${groupId}/chat` },
-        { icon: <FiFileText />, label: "Material", path: `/group/${groupId}/material` },
-        { icon: <FiVideo />, label: "Sessions", path: `/group/${groupId}/session` },
-        { icon: <FiSettings />, label: "Settings", path: `/group/${groupId}/settings` },
-    ];
+    const isActive = (path) => location.pathname === path;
 
-    return (
-        <aside className="w-16 flex flex-col items-center py-6 bg-white shadow-lg rounded-r-3xl mt-10 mb-10 relative">
-            {/* Home Icon */}
-            <div 
-                className="relative group my-3 cursor-pointer"
-                onClick={() => navigate(homeItem.path)}
+    const homeItem = { icon: <FiHome />, label: "Home", path: "/home" };
+    const groupMenuItems = groupId ? [
+        { icon: <FiMessageSquare />, label: "Chat",     path: `/group/${groupId}/chat` },
+        { icon: <FiCheckSquare />,   label: "Tasks",    path: `/group/${groupId}/tasks` },
+        { icon: <FiPenTool />,      label: "Board",     path: `/group/${groupId}/whiteboard` },
+        { icon: <FiFileText />,     label: "Material",  path: `/group/${groupId}/material` },
+        { icon: <FiVideo />,        label: "Sessions",  path: `/group/${groupId}/session` },
+        { icon: <FiSettings />,     label: "Settings",  path: `/group/${groupId}/settings` },
+    ] : [];
+
+    const NavBtn = ({ icon, label, path, delay = 0, animated = false }) => {
+        const active = isActive(path);
+        const btn = (
+            <div
+                className="relative group cursor-pointer"
+                onClick={() => navigate(path)}
             >
-                <div className="text-2xl p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-all">
-                    <div className="text-2xl">
-                        {homeItem.icon}
-                    </div>
+                <div className={`text-xl p-3 rounded-2xl transition-all duration-200 flex items-center justify-center
+                    ${active
+                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/40"
+                        : "text-slate-400 hover:bg-white/10 hover:text-white"
+                    }`}
+                >
+                    {icon}
+                    {active && (
+                        <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-400 rounded-r-full -ml-3" />
+                    )}
                 </div>
-                <span className="absolute left-16 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-blue-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all z-50">
-                    {homeItem.label}
+                {/* Tooltip */}
+                <span className="absolute left-14 top-1/2 -translate-y-1/2 px-2.5 py-1 text-xs font-medium bg-slate-800 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap shadow-lg z-50 border border-white/10">
+                    {label}
                 </span>
             </div>
+        );
 
-            {/* Group Related Icons */}
+        if (!animated) return btn;
+        return (
+            <motion.div
+                key={path}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.25, delay }}
+            >
+                {btn}
+            </motion.div>
+        );
+    };
+
+    return (
+        <aside className="w-16 flex flex-col items-center py-8 gap-2 bg-slate-900/95 backdrop-blur-md shadow-xl rounded-r-3xl my-4 ml-2 border border-white/5">
+            {/* Brand dot */}
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
+                <span className="text-white text-xs font-bold">G</span>
+            </div>
+
+            {/* Divider */}
+            <div className="w-6 h-px bg-white/10 mb-2" />
+
+            <NavBtn icon={homeItem.icon} label={homeItem.label} path={homeItem.path} />
+
             <AnimatePresence>
-                {showGroupMenu && groupMenuItems.map((item, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.4, delay: index * 0.1 }}
-                        className="relative group my-3 cursor-pointer"
-                        onClick={() => navigate(item.path)}
-                    >
-                        <div className="text-2xl p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-all">
-                            <div className="text-2xl">
-                                {item.icon}
-                            </div>
-                        </div>
-                        <span className="absolute left-16 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-blue-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-all z-50">
-                            {item.label}
-                        </span>
-                    </motion.div>
-                ))}
+                {showGroupMenu && (
+                    <>
+                        <div className="w-6 h-px bg-white/10 my-1" />
+                        {groupMenuItems.map((item, index) => (
+                            <NavBtn
+                                key={item.path}
+                                icon={item.icon}
+                                label={item.label}
+                                path={item.path}
+                                delay={index * 0.05}
+                                animated
+                            />
+                        ))}
+                    </>
+                )}
             </AnimatePresence>
         </aside>
     );

@@ -57,6 +57,29 @@ function initializeSocket(server) {
         });
 
 
+        // Whiteboard Synchronisation
+        socket.on("drawPath", ({ groupId, path }) => {
+            if (!groupId || !path) return;
+            // Broadcast the drawing path to everyone else in the group
+            socket.to(groupId).emit("receivePath", path);
+        });
+
+        socket.on("clearCanvas", ({ groupId }) => {
+            if (!groupId) return;
+            socket.to(groupId).emit("canvasCleared");
+        });
+
+        // Typing Indicators
+        socket.on("typing", ({ groupId, userId, name }) => {
+            if (!groupId) return;
+            socket.to(groupId).emit("userTyping", { userId, name });
+        });
+
+        socket.on("stopTyping", ({ groupId, userId, name }) => {
+            if (!groupId) return;
+            socket.to(groupId).emit("userStoppedTyping", { userId, name });
+        });
+
         socket.on('disconnect', () => {
             // console.log('User disconnected:', socket.id);
             for (const [userId, sockId] of activeUsers.entries()) {
@@ -71,4 +94,4 @@ function initializeSocket(server) {
     // console.log('Socket.io initialized');
 }
 
-module.exports = { initializeSocket };
+module.exports = { initializeSocket, activeUsers };

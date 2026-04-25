@@ -1,178 +1,221 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { HiTrash, HiDocumentText } from "react-icons/hi";
+import { HiDocumentText } from "react-icons/hi";
+import { FiTrash2, FiDownload, FiSearch, FiInbox } from "react-icons/fi";
+import ConfirmModal from "../../../shared/ConfirmModal";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const VITE_BASE_URL = import.meta.env.VITE_BASE_URL
+const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
+
+const fileTypeColor = (name) => {
+  const ext = name?.split(".").pop()?.toLowerCase();
+  if (["pdf"].includes(ext)) return "from-red-400 to-rose-500";
+  if (["doc", "docx"].includes(ext)) return "from-blue-400 to-blue-600";
+  if (["ppt", "pptx"].includes(ext)) return "from-orange-400 to-red-500";
+  if (["txt"].includes(ext)) return "from-slate-400 to-slate-600";
+  return "from-blue-500 to-indigo-600";
+};
+
+const SkeletonCard = () => (
+  <div className="bg-white rounded-2xl p-4 border border-slate-100 animate-pulse space-y-3">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 rounded-xl bg-slate-200" />
+      <div className="flex-1 space-y-2">
+        <div className="h-3 bg-slate-200 rounded w-2/3" />
+        <div className="h-2.5 bg-slate-100 rounded w-1/2" />
+      </div>
+    </div>
+    <div className="h-2 bg-slate-100 rounded w-1/3" />
+  </div>
+);
+
 const MaterialPage = () => {
-  const { groupId } = useParams(); // Get groupId from URL
+  const { groupId } = useParams();
   const [materials, setMaterials] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("latest");
   const [currentUser, setCurrentUser] = useState(null);
   const [groupInfo, setGroupInfo] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    if (!groupId) return; // Ensure groupId exists before making a request
+    if (!groupId) return;
+    const token = localStorage.getItem("token");
 
-    const fetchMaterials = async () => {
+    const fetchAll = async () => {
       try {
-        const response = await axios.get(`${VITE_BASE_URL}/materials/${groupId}`, {
-          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setMaterials(response.data);
-        const userResponse = await axios.get(`${VITE_BASE_URL}/user/getId`, {
-          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setCurrentUser(userResponse.data);
-        console.log(userResponse.data);
+        const [matRes, userRes, groupRes] = await Promise.all([
+          axios.get(`${VITE_BASE_URL}/materials/${groupId}`, { headers: { authorization: `Bearer ${token}` } }),
+          axios.get(`${VITE_BASE_URL}/user/getId`, { headers: { authorization: `Bearer ${token}` } }),
+          axios.get(`${VITE_BASE_URL}/groups/${groupId}`, { headers: { authorization: `Bearer ${token}` } }),
+        ]);
+        setMaterials(matRes.data);
+        setCurrentUser(userRes.data);
+        setGroupInfo(groupRes.data);
       } catch (error) {
-        console.error("Error fetching materials:", error);
+        // silently fail
+      } finally {
+        setLoading(false);
       }
     };
-
-    const fetchGroupInfo = async () => {
-      try {
-        const groupResponse = await axios.get(`${VITE_BASE_URL}/groups/${groupId}`, {
-          headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setGroupInfo(groupResponse.data);
-        console.log(groupResponse.data);
-      } catch (error) {
-        console.error("Error fetching group info:", error);
-      }
-    };
-
-    fetchMaterials();
-    fetchGroupInfo();
+    fetchAll();
   }, [groupId]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this material?"))
-      return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
     try {
-      await axios.delete(`${VITE_BASE_URL}/materials/${id}`, {
+      await axios.delete(`${VITE_BASE_URL}/materials/${deleteTarget}`, {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` },
-        data: {
-          adminId: groupInfo.admin,
-          senderId: currentUser,
-        },
+        data: { adminId: groupInfo.admin, senderId: currentUser },
       });
-      setMaterials((prev) => prev.filter((item) => item._id !== id));
+      setMaterials((prev) => prev.filter((item) => item._id !== deleteTarget));
+      toast.success("Material deleted", { autoClose: 2000, hideProgressBar: true });
     } catch (error) {
-      console.error("Error deleting material:", error);
+      toast.error("Failed to delete material");
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
-  const truncateText = (text, maxLength) => {
-    return text?.length > maxLength
-      ? text.substring(0, maxLength) + "..."
-      : text;
-  };
+  const truncateText = (text, max) =>
+    text?.length > max ? text.substring(0, max) + "..." : text;
 
   const filteredMaterials = materials
-    .filter((material) =>
-      material.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    .filter((m) => m.name?.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) =>
       sortBy === "latest"
         ? new Date(b.createdAt) - new Date(a.createdAt)
         : new Date(a.createdAt) - new Date(b.createdAt)
     );
 
-  useEffect(() => {
-    // console.log("Current User ID:", currentUser);
-    // console.log("Group Admin ID:", groupInfo.admin);
-  }, [currentUser, groupInfo]);
+  const isAdmin = currentUser === groupInfo.admin;
 
   return (
-    <main className="flex flex-1 mt-8 relative">
-      
+    <main className="flex flex-1 relative h-full">
+      <ToastContainer position="top-right" theme="light" />
+      <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 flex flex-col max-h-[87vh] overflow-hidden">
 
-      {/* Main Container (Fixed Height) */}
-      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
-        {/* Toggle Buttons */}
-       
-
-        {/* Content Section (Scrollable Inner Pages, Fixed Parent) */}
-        <div className="flex-1 mt-6 overflow-hidden ">
-          <div className="h-full overflow-y-auto">
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="sticky top-0 z-10 bg-white p-4 shadow-md flex justify-between items-center rounded-md">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search materials..."
-          className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-        />
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="p-2 border border-gray-300 rounded-lg"
-        >
-          <option value="latest">Latest</option>
-          <option value="oldest">Oldest</option>
-        </select>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {filteredMaterials.length > 0 ? (
-          filteredMaterials.map((material) => (
-            <div
-              key={material._id}
-              className="p-4 bg-white rounded-lg shadow-lg flex flex-col justify-between h-44 hover:shadow-xl transition-shadow"
-            >
-              <div className="flex items-center space-x-3">
-                <HiDocumentText className="text-blue-600 text-3xl" />
-                <h2 className="text-lg font-semibold text-gray-800 truncate w-48">
-                  {truncateText(material.name || "Unnamed Material", 20)}
-                </h2>
-              </div>
-              <p className="text-sm text-gray-500">
-                Sent by: {material.senderName || "Unknown"}
-              </p>
-              <p className="text-xs text-gray-400">
-                {material.createdAt
-                  ? new Date(material.createdAt).toLocaleString()
-                  : "Unknown Date"}
-              </p>
-              <div className="flex justify-between items-center mt-2">
-                {material.fileUrl ? (
-                  <a
-                    href={material.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline text-sm"
-                  >
-                    View Material
-                  </a>
-                ) : (
-                  <span className="text-gray-500 text-sm">
-                    No file available
-                  </span>
-                )}
-                {currentUser === groupInfo.admin && (
-                  <button
-                    onClick={() => handleDelete(material._id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <HiTrash className="text-xl" />
-                  </button>
-                )}
-              </div>
+        {/* Header */}
+        <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-100 flex-shrink-0">
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">Materials</h2>
+            <p className="text-xs text-slate-400 mt-0.5">{filteredMaterials.length} file{filteredMaterials.length !== 1 ? "s" : ""}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Search */}
+            <div className="relative">
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search files..."
+                className="pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition w-44"
+              />
             </div>
-          ))
-        ) : (
-          <p className="text-gray-500 text-center col-span-3">
-            No materials found.
-          </p>
-        )}
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 rounded-xl border border-slate-200 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition bg-white"
+            >
+              <option value="latest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
+            </div>
+          ) : filteredMaterials.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mb-4">
+                <FiInbox className="text-slate-300 text-2xl" />
+              </div>
+              <p className="text-slate-500 font-semibold text-sm">No materials found</p>
+              <p className="text-slate-400 text-xs mt-1">
+                {searchQuery ? "Try a different search term" : "Files shared in chat will appear here"}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredMaterials.map((material) => (
+                <div
+                  key={material._id}
+                  className="bg-white rounded-2xl border border-slate-100 p-4 hover:border-blue-200 hover:shadow-md transition-all duration-150 group flex flex-col gap-3"
+                >
+                  {/* File icon + name */}
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${fileTypeColor(material.name)} flex items-center justify-center shadow-sm flex-shrink-0`}>
+                      <HiDocumentText className="text-white text-lg" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-slate-800 truncate">
+                        {truncateText(material.name || "Unnamed File", 28)}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        by {material.senderName || "Unknown"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Date */}
+                  <p className="text-xs text-slate-400">
+                    {material.createdAt ? new Date(material.createdAt).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) : "Unknown date"}
+                  </p>
+
+                  {/* Actions */}
+                  <div className="flex items-center justify-between mt-auto pt-1 border-t border-slate-50">
+                    {material.fileUrl ? (
+                      <a
+                        href={material.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-xs font-semibold transition"
+                      >
+                        <FiDownload className="text-sm" /> View / Download
+                      </a>
+                    ) : (
+                      <span className="text-slate-400 text-xs">No file available</span>
+                    )}
+                    {isAdmin && (
+                      <button
+                        onClick={() => setDeleteTarget(material._id)}
+                        className="w-7 h-7 rounded-lg bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+                      >
+                        <FiTrash2 className="text-sm" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-    </div>
-    </div>
-    </div>
+
+      {/* Confirm delete */}
+      {deleteTarget && (
+        <ConfirmModal
+          title="Delete material"
+          message="This file will be permanently removed from the group. Members will no longer be able to access it."
+          confirmLabel="Delete File"
+          danger
+          loading={deleting}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
+      )}
     </main>
   );
 };

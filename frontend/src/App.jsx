@@ -4,21 +4,21 @@ import Login from "../src/features/Auth/pages/Login";
 import Register from "../src/features/Auth/pages/Register";
 import Home from "../src/pages/Home";
 import Layout from "./pages/Layout";
-// import GroupPage from "./features/Group/pages/GroupPage";
 import GroupSettings from "./features/Group/pages/GroupSettings";
 import ProtectRoute from "./shared/ProtectRoute";
 import { ActivityProvider } from "./contexts/ActivityContext";
-import JoinScreen from "./features/VideoSession/components/JoinScreen";
 import { GroupProvider } from "./contexts/GroupContext";
 import ChatPage from "./features/Group/pages/ChatPage";
 import MaterialPage from "./features/Group/pages/MaterialPage";
 import SessionPage from "./features/Group/pages/SessionPage";
+import TasksPage from "./features/Group/pages/TasksPage";
+import WhiteboardPage from "./features/Group/pages/WhiteboardPage";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   return (
     <GroupProvider>
     <Router>
-      
       <ActivityProvider>
         <Routes>
           <Route path="/" element={<Navigate to="/home" />} />
@@ -26,12 +26,15 @@ const App = () => {
           <Route path="/register" element={<Register />} />
 
           <Route path="/home" element={<ProtectRoute><Layout><Home /></Layout></ProtectRoute>} />
-          {/* <Route path="/group/:groupId" element={<ProtectRoute><Layout><GroupPage /></Layout></ProtectRoute>} /> */}
           <Route path="/group/:groupId/settings" element={<ProtectRoute><Layout><GroupSettings /></Layout></ProtectRoute>} />
           <Route path="/group/:groupId/chat" element={<ProtectRoute><Layout><ChatPage /></Layout></ProtectRoute>} />
+          <Route path="/group/:groupId/tasks" element={<ProtectRoute><Layout><TasksPage /></Layout></ProtectRoute>} />
+          <Route path="/group/:groupId/whiteboard" element={<ProtectRoute><Layout><WhiteboardPage /></Layout></ProtectRoute>} />
           <Route path="/group/:groupId/material" element={<ProtectRoute><Layout><MaterialPage /></Layout></ProtectRoute>} />
           <Route path="/group/:groupId/session" element={<ProtectRoute><Layout><SessionPage /></Layout></ProtectRoute>} />
-          <Route path="/session/:meetingId" element={<JoinScreen/>}/>
+
+          {/* 404 catch-all */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ActivityProvider>
     </Router>
@@ -40,3 +43,4 @@ const App = () => {
 };
 
 export default App;
+

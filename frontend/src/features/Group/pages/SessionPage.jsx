@@ -25,10 +25,9 @@ const SessionPage = () => {
             authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("Fetched sessions:", response.data);
         setSessions(response.data);
       } catch (error) {
-        console.error("Error fetching sessions:", error);
+        // silently handle fetch error
       }
     };
 

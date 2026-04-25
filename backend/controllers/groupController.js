@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Item = require('../models/Item');
 const Session = require('../models/Session');
 const crypto = require("crypto");
+const { activeUsers } = require('../socket');
 // Create a new group
 exports.createGroup = async (req, res) => {
     const userId = req.user.id;
@@ -58,6 +59,16 @@ exports.joinGroup = async (req, res) => {
 
         user.memberGroups.push(group._id);
         
+        // System message
+        const systemItem = new Item({
+            type: "system",
+            content: `${user.name} joined the group`,
+            sender: userId,
+            name: "System"
+        });
+        await systemItem.save();
+        group.items.push(systemItem._id);
+
         // Save both the group and user
         await group.save();
         await user.save();
@@ -127,10 +138,22 @@ exports.updateGroup = async (req, res) => {
             return res.status(403).json({ error: 'Only admin can update this group' });
         }
 
+        const oldName = group.name;
         group.name = name || group.name;
         group.description = description || group.description;
         group.isPrivate = isPrivate !== undefined ? isPrivate : group.isPrivate;
         group.updatedAt = Date.now();
+
+        if (name && oldName !== name) {
+            const systemItem = new Item({
+                type: "system",
+                content: `Group renamed to "${name}"`,
+                sender: userId,
+                name: "System"
+            });
+            await systemItem.save();
+            group.items.push(systemItem._id);
+        }
 
         await group.save();
         console.log("Group updated successfully")
@@ -158,6 +181,19 @@ exports.removeMember = async (req, res) => {
         }
 
         group.members = group.members.filter(member => member.toString() !== userId);
+        
+        const removedUser = await User.findById(userId);
+        if (removedUser) {
+            const systemItem = new Item({
+                type: "system",
+                content: `${removedUser.name} was removed from the group`,
+                sender: adminId,
+                name: "System"
+            });
+            await systemItem.save();
+            group.items.push(systemItem._id);
+        }
+
         await group.save();
 
         await User.findByIdAndUpdate(userId, {
@@ -198,9 +234,15 @@ exports.deleteGroup = async (req, res) => {
 // Get all members of a group
 exports.getGroupMembers = async (req, res) => {
     try {
-        const group = await Group.findById(req.params.id).populate('members');
+        const group = await Group.findById(req.params.id).populate('members', 'name profilePicture email');
         if (!group) return res.status(404).json({ error: 'Group not found' });
-        res.status(200).json(group.members);
+        
+        const membersWithStatus = group.members.map(member => ({
+             ...member.toObject(),
+             isOnline: activeUsers.has(member._id.toString())
+        }));
+        
+        res.status(200).json(membersWithStatus);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -221,6 +263,19 @@ exports.exitGroup = async (req, res) => {
 
         // Remove user from members list
         group.members = group.members.filter(member => member.toString() !== userId);
+
+        const exitingUser = await User.findById(userId);
+        if (exitingUser) {
+            const systemItem = new Item({
+                type: "system",
+                content: `${exitingUser.name} left the group`,
+                sender: userId,
+                name: "System"
+            });
+            await systemItem.save();
+            group.items.push(systemItem._id);
+        }
+
         await group.save();
 
         // Remove group reference from user's memberGroups list
