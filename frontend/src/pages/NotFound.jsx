@@ -13,14 +13,14 @@ const NotFound = () => {
 
       <div className="relative text-center px-6 animate-fade-in">
         {/* Icon */}
-        <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-white shadow-xl border border-slate-100 mb-8">
+        <div className="inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-surface shadow-xl border border-theme mb-8">
           <FiAlertCircle className="text-5xl text-blue-400" />
         </div>
 
         {/* Text */}
         <h1 className="text-8xl font-black text-slate-200 leading-none select-none">404</h1>
-        <h2 className="text-2xl font-bold text-slate-700 mt-3">Page not found</h2>
-        <p className="text-slate-400 mt-2 max-w-sm mx-auto text-sm leading-relaxed">
+        <h2 className="text-2xl font-bold text-theme-primary mt-3">Page not found</h2>
+        <p className="text-theme-muted mt-2 max-w-sm mx-auto text-sm leading-relaxed">
           Looks like this page doesn&apos;t exist. It may have been moved, deleted, or you followed a broken link.
         </p>
 

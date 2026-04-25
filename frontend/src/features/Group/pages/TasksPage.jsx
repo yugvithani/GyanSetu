@@ -10,12 +10,12 @@ import { useActivity } from "../../../contexts/ActivityContext";
 const VITE_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const SkeletonTask = () => (
-  <div className="bg-white rounded-2xl p-4 border border-slate-100 animate-pulse space-y-3">
-    <div className="h-4 bg-slate-200 rounded w-3/4" />
-    <div className="h-3 bg-slate-100 rounded w-1/2" />
+  <div className="bg-surface rounded-2xl p-4 border border-theme animate-pulse space-y-3">
+    <div className="h-4 bg-theme-border rounded w-3/4" />
+    <div className="h-3 bg-surface-2 rounded w-1/2" />
     <div className="flex gap-2 pt-2">
-      <div className="h-6 bg-slate-200 rounded-full w-16" />
-      <div className="h-6 bg-slate-100 rounded-full w-20" />
+      <div className="h-6 bg-theme-border rounded-full w-16" />
+      <div className="h-6 bg-surface-2 rounded-full w-20" />
     </div>
   </div>
 );
@@ -115,19 +115,19 @@ const TasksPage = () => {
   const getStatusIcon = (status) => {
     if (status === "done") return <FiCheckCircle className="text-green-500" />;
     if (status === "in_progress") return <FiMoreHorizontal className="text-amber-500" />;
-    return <FiCircle className="text-slate-400" />;
+    return <FiCircle className="text-theme-muted" />;
   };
 
   return (
     <main className="flex flex-1 relative h-full">
       <ToastContainer position="top-right" theme="light" />
-      <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 flex flex-col max-h-[87vh] overflow-hidden">
+      <div className="flex-1 bg-surface rounded-3xl shadow-sm border border-theme flex flex-col max-h-[87vh] overflow-hidden">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-theme flex-shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-slate-800">Tasks & Assignments</h2>
-            <p className="text-xs text-slate-400 mt-0.5">{tasks.length} task{tasks.length !== 1 ? "s" : ""}</p>
+            <h2 className="text-lg font-bold text-theme-primary">Tasks & Assignments</h2>
+            <p className="text-xs text-theme-muted mt-0.5">{tasks.length} task{tasks.length !== 1 ? "s" : ""}</p>
           </div>
           <button
             onClick={() => setShowModal(true)}
@@ -138,45 +138,45 @@ const TasksPage = () => {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-6 bg-surface-2/50">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map(i => <SkeletonTask key={i} />)}
             </div>
           ) : tasks.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center mb-4">
-                <FiCheckCircle className="text-slate-300 text-2xl" />
+              <div className="w-16 h-16 rounded-2xl bg-surface-2 border border-theme flex items-center justify-center mb-4">
+                <FiCheckCircle className="text-theme-muted text-2xl" />
               </div>
-              <p className="text-slate-500 font-semibold text-sm">No tasks assigned</p>
-              <p className="text-slate-400 text-xs mt-1">Create a task to get started</p>
+              <p className="text-theme-muted font-semibold text-sm">No tasks assigned</p>
+              <p className="text-theme-muted text-xs mt-1">Create a task to get started</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {tasks.map(task => {
                 const canDelete = currentUser === task.createdBy?._id || currentUser === groupAdmin;
                 return (
-                  <div key={task._id} className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-shadow group flex flex-col h-full">
+                  <div key={task._id} className="bg-surface rounded-2xl border border-theme p-5 shadow-sm hover:shadow-md transition-shadow group flex flex-col h-full">
                     <div className="flex justify-between items-start mb-2 gap-2">
-                      <h3 className={`font-semibold text-sm ${task.status === "done" ? "line-through text-slate-400" : "text-slate-800"}`}>
+                      <h3 className={`font-semibold text-sm ${task.status === "done" ? "line-through text-theme-muted" : "text-theme-primary"}`}>
                         {task.title}
                       </h3>
                       {canDelete && (
                         <button
                           onClick={() => setDeleteTarget(task._id)}
-                          className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
+                          className="opacity-0 group-hover:opacity-100 w-6 h-6 rounded flex items-center justify-center text-theme-muted hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
                         >
                           <FiTrash2 className="text-xs" />
                         </button>
                       )}
                     </div>
                     {task.description && (
-                      <p className="text-xs text-slate-500 mb-4 line-clamp-3 leading-relaxed">
+                      <p className="text-xs text-theme-muted mb-4 line-clamp-3 leading-relaxed">
                         {task.description}
                       </p>
                     )}
                     
-                    <div className="mt-auto pt-4 space-y-3 border-t border-slate-50">
+                    <div className="mt-auto pt-4 space-y-3 border-t border-theme">
                       <div className="flex justify-between items-center text-[11px] font-medium font-sans tracking-wide">
                         <select
                           value={task.status}
@@ -184,7 +184,7 @@ const TasksPage = () => {
                           className={`px-2 py-1 rounded-md outline-none cursor-pointer border ${
                             task.status === "done" ? "bg-green-50 text-green-700 border-green-100" :
                             task.status === "in_progress" ? "bg-amber-50 text-amber-700 border-amber-100" :
-                            "bg-slate-50 text-slate-600 border-slate-200"
+                            "bg-surface-2 text-theme-secondary border-theme"
                           }`}
                         >
                           <option value="todo">To Do</option>
@@ -193,22 +193,22 @@ const TasksPage = () => {
                         </select>
 
                         {task.dueDate && (
-                          <span className={`flex items-center gap-1 ${new Date(task.dueDate) < new Date() && task.status !== "done" ? 'text-red-500' : 'text-slate-400'}`}>
+                          <span className={`flex items-center gap-1 ${new Date(task.dueDate) < new Date() && task.status !== "done" ? 'text-red-500' : 'text-theme-muted'}`}>
                             <FiClock />
                             {new Date(task.dueDate).toLocaleDateString([], { month: "short", day: "numeric" })}
                           </span>
                         )}
                       </div>
                       
-                      <div className="flex items-center justify-between gap-2.5 bg-slate-50/50 p-2 rounded-xl">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Assignee:</span>
+                      <div className="flex items-center justify-between gap-2.5 bg-surface-2/50 p-2 rounded-xl">
+                        <span className="text-[10px] uppercase font-bold text-theme-muted tracking-wider">Assignee:</span>
                         {task.assignedTo ? (
                            <div className="flex items-center gap-1.5">
                              <img src={task.assignedTo.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${task.assignedTo.name}&backgroundColor=1a63f5&textColor=ffffff`} alt="" className="w-5 h-5 rounded-md" />
-                             <span className="text-xs font-semibold text-slate-700 truncate max-w-[100px]">{task.assignedTo.name}</span>
+                             <span className="text-xs font-semibold text-theme-primary truncate max-w-[100px]">{task.assignedTo.name}</span>
                            </div>
                         ) : (
-                          <span className="text-xs font-medium text-slate-400 italic">Unassigned</span>
+                          <span className="text-xs font-medium text-theme-muted italic">Unassigned</span>
                         )}
                       </div>
                     </div>
@@ -223,34 +223,34 @@ const TasksPage = () => {
       {/* Create Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-slide-up pb-2">
-            <div className="px-6 py-5 border-b border-slate-100">
-              <h3 className="font-bold text-slate-800">Assign New Task</h3>
+          <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-slide-up pb-2">
+            <div className="px-6 py-5 border-b border-theme">
+              <h3 className="font-bold text-theme-primary">Assign New Task</h3>
             </div>
             <form onSubmit={handleCreateTask} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Title</label>
-                <input required type="text" value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none" placeholder="e.g. Complete chapter 5 exercises" />
+                <label className="block text-xs font-semibold text-theme-muted uppercase tracking-wider mb-1.5">Title</label>
+                <input required type="text" value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-theme text-sm focus:ring-2 focus:ring-blue-500/40 outline-none" placeholder="e.g. Complete chapter 5 exercises" />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Description</label>
-                <textarea value={newTask.description} onChange={e => setNewTask({...newTask, description: e.target.value})} rows={2} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none resize-none" placeholder="Add more context..." />
+                <label className="block text-xs font-semibold text-theme-muted uppercase tracking-wider mb-1.5">Description</label>
+                <textarea value={newTask.description} onChange={e => setNewTask({...newTask, description: e.target.value})} rows={2} className="w-full px-4 py-2.5 rounded-xl border border-theme text-sm focus:ring-2 focus:ring-blue-500/40 outline-none resize-none" placeholder="Add more context..." />
               </div>
               <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Assign To</label>
-                    <select value={newTask.assignedTo} onChange={e => setNewTask({...newTask, assignedTo: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none bg-white">
+                    <label className="block text-xs font-semibold text-theme-muted uppercase tracking-wider mb-1.5">Assign To</label>
+                    <select value={newTask.assignedTo} onChange={e => setNewTask({...newTask, assignedTo: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-theme text-sm focus:ring-2 focus:ring-blue-500/40 outline-none bg-surface">
                       <option value="">Anyone (Unassigned)</option>
                       {groupMembers.map(m => <option key={m._id} value={m._id}>{m.name}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Due Date</label>
-                    <input type="date" value={newTask.dueDate} onChange={e => setNewTask({...newTask, dueDate: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none text-slate-600" />
+                    <label className="block text-xs font-semibold text-theme-muted uppercase tracking-wider mb-1.5">Due Date</label>
+                    <input type="date" value={newTask.dueDate} onChange={e => setNewTask({...newTask, dueDate: e.target.value})} className="w-full px-3 py-2.5 rounded-xl border border-theme text-sm focus:ring-2 focus:ring-blue-500/40 outline-none text-theme-secondary" />
                   </div>
               </div>
-              <div className="flex gap-3 pt-4 border-t border-slate-50">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition">Cancel</button>
+              <div className="flex gap-3 pt-4 border-t border-theme">
+                <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2.5 rounded-xl bg-surface-2 text-theme-secondary text-sm font-medium hover:bg-theme-border transition">Cancel</button>
                 <button type="submit" className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition shadow-sm">Create Task</button>
               </div>
             </form>

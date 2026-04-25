@@ -106,7 +106,7 @@ const UserProfile = () => {
 
       {/* Dropdown */}
       {showDropdown && (
-        <div className="absolute right-0 mt-2 w-72 bg-white rounded-3xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-slide-up">
+        <div className="absolute right-0 mt-2 w-72 bg-surface rounded-3xl shadow-2xl border border-theme z-50 overflow-hidden animate-slide-up">
           {userInfo ? (
             <>
               {/* Profile header */}
@@ -124,9 +124,9 @@ const UserProfile = () => {
               <div className="p-2">
                 <button
                   onClick={handleEditClick}
-                  className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-slate-700 text-sm hover:bg-slate-50 transition"
+                  className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-theme-secondary text-sm hover:bg-surface-2 transition"
                 >
-                  <FiEdit2 className="text-slate-400 text-base" /> Edit Profile
+                  <FiEdit2 className="text-theme-muted text-base" /> Edit Profile
                 </button>
                 <button
                   onClick={handleLogout}
@@ -137,7 +137,7 @@ const UserProfile = () => {
               </div>
             </>
           ) : (
-            <div className="p-5 text-slate-400 text-sm text-center">Loading profile...</div>
+            <div className="p-5 text-theme-muted text-sm text-center">Loading profile...</div>
           )}
         </div>
       )}
@@ -145,12 +145,12 @@ const UserProfile = () => {
       {/* Edit Profile Modal */}
       {showEditModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 animate-fade-in">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-slide-up">
+          <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-slide-up border border-theme">
             {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="text-lg font-bold text-slate-800">Edit Profile</h2>
-              <button onClick={() => setShowEditModal(false)} className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition">
-                <FiX className="text-slate-500 text-sm" />
+            <div className="flex items-center justify-between px-6 py-4 border-b border-theme">
+              <h2 className="text-lg font-bold text-theme-primary">Edit Profile</h2>
+              <button onClick={() => setShowEditModal(false)} className="w-8 h-8 rounded-xl bg-surface-2 flex items-center justify-center hover:opacity-80 transition border border-theme">
+                <FiX className="text-theme-secondary text-sm" />
               </button>
             </div>
             <form onSubmit={handleProfileSubmit} className="p-6 space-y-5">
@@ -160,7 +160,7 @@ const UserProfile = () => {
                   <img
                     src={editData.profilePicture || avatarUrl}
                     alt="Preview"
-                    className="w-20 h-20 rounded-2xl object-cover border-4 border-slate-100 shadow"
+                    className="w-20 h-20 rounded-2xl object-cover border-4 border-theme shadow"
                   />
                   <label htmlFor="profilePicInput" className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-2xl opacity-0 group-hover:opacity-100 transition cursor-pointer">
                     <FiCamera className="text-white text-xl" />
@@ -170,29 +170,29 @@ const UserProfile = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1.5">Name</label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1.5">Name</label>
                 <input
                   type="text"
                   name="name"
                   value={editData.name}
                   onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition"
+                  className="input-theme w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1.5">Bio <span className="text-slate-300">(optional)</span></label>
+                <label className="block text-sm font-medium text-theme-secondary mb-1.5">Bio <span className="text-theme-muted">(optional)</span></label>
                 <textarea
                   name="bio"
                   value={editData.bio}
                   onChange={(e) => setEditData(prev => ({ ...prev, bio: e.target.value }))}
                   rows={3}
                   placeholder="Tell people about yourself..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition resize-none"
+                  className="input-theme w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition resize-none"
                 />
               </div>
 
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition">
+                <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 py-2.5 rounded-xl bg-surface-2 text-theme-secondary text-sm font-medium hover:opacity-80 transition border border-theme">
                   Cancel
                 </button>
                 <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition disabled:opacity-60">

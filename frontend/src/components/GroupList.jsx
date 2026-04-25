@@ -31,24 +31,24 @@ const GroupAvatar = ({ name }) => {
 
 // Skeleton loader card
 const SkeletonCard = () => (
-  <li className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 animate-pulse">
-    <div className="w-10 h-10 rounded-xl bg-slate-200 flex-shrink-0" />
+  <li className="flex items-center gap-3 p-4 bg-surface rounded-2xl border border-theme animate-pulse">
+    <div className="w-10 h-10 rounded-xl bg-theme-border dark:bg-slate-700 flex-shrink-0" />
     <div className="flex-1 space-y-2">
-      <div className="h-3.5 bg-slate-200 rounded w-1/2" />
-      <div className="h-2.5 bg-slate-100 rounded w-3/4" />
+      <div className="h-3.5 bg-theme-border dark:bg-slate-700 rounded w-1/2" />
+      <div className="h-2.5 bg-surface-2 dark:bg-slate-800 rounded w-3/4" />
     </div>
   </li>
 );
 
 // Modal wrapper
 const Modal = ({ title, onClose, children }) => (
-  <div className="fixed inset-0 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm z-50 animate-fade-in">
-    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 p-6 animate-slide-up">
-      <h2 className="text-lg font-bold text-slate-800 mb-5">{title}</h2>
+  <div className="fixed inset-0 flex items-center justify-center modal-overlay backdrop-blur-sm z-50 animate-fade-in">
+    <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-sm mx-4 p-6 animate-slide-up border border-theme">
+      <h2 className="text-lg font-bold text-theme-primary mb-5">{title}</h2>
       {children}
       <button
         onClick={onClose}
-        className="mt-3 w-full py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition"
+        className="mt-3 w-full py-2.5 rounded-xl bg-surface-2 text-theme-secondary text-sm font-medium hover:opacity-80 transition border border-theme"
       >
         Cancel
       </button>
@@ -124,18 +124,18 @@ const GroupList = () => {
     }
   };
 
-  const inputCls = "w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-800 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition";
-  const labelCls = "block text-sm font-medium text-slate-600 mb-1.5";
+  const inputCls = "input-theme w-full px-4 py-2.5 rounded-xl border text-sm placeholder:text-theme-muted focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400 transition";
+  const labelCls = "block text-sm font-medium text-theme-secondary mb-1.5";
 
   return (
-    <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 p-6 flex flex-col">
-      <ToastContainer position="top-center" theme="light" />
+    <div className="flex-1 bg-surface rounded-3xl shadow-sm border border-theme p-6 flex flex-col transition-colors duration-300">
+      <ToastContainer position="top-center" />
 
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-800">Your Groups</h2>
-          <p className="text-xs text-slate-400 mt-0.5">{groups.length} group{groups.length !== 1 ? "s" : ""}</p>
+          <h2 className="text-xl font-bold text-theme-primary">Your Groups</h2>
+          <p className="text-xs text-theme-muted mt-0.5">{groups.length} group{groups.length !== 1 ? "s" : ""}</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -148,7 +148,7 @@ const GroupList = () => {
           <button
             onClick={() => setShowJoinForm(true)}
             title="Join Group"
-            className="flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-slate-200 transition active:scale-95"
+            className="flex items-center gap-2 bg-surface-2 text-theme-secondary px-4 py-2 rounded-xl text-sm font-medium hover:opacity-80 transition border border-theme active:scale-95"
           >
             <FaSignInAlt className="text-xs" /> Join
           </button>
@@ -162,11 +162,11 @@ const GroupList = () => {
         </ul>
       ) : groups.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center py-16 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-4">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center mb-4">
             <FiUsers className="text-blue-400 text-2xl" />
           </div>
-          <p className="text-slate-600 font-semibold">No groups yet</p>
-          <p className="text-slate-400 text-sm mt-1">Create a group or join one with a code</p>
+          <p className="text-theme-secondary font-semibold">No groups yet</p>
+          <p className="text-theme-muted text-sm mt-1">Create a group or join one with a code</p>
         </div>
       ) : (
         <ul className="space-y-2 overflow-y-auto flex-1 max-h-[580px] pr-1">
@@ -174,22 +174,22 @@ const GroupList = () => {
             <li
               key={group._id}
               onClick={() => navigate(`/group/${group._id}/chat`)}
-              className="flex items-center gap-3 p-4 rounded-2xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 cursor-pointer transition-all duration-150 group"
+              className="flex items-center gap-3 p-4 rounded-2xl border border-theme hover:border-blue-400/50 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 cursor-pointer transition-all duration-150 group"
             >
               <GroupAvatar name={group.name} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-slate-800 text-sm truncate group-hover:text-blue-700 transition">{group.name}</h3>
+                  <h3 className="font-semibold text-theme-primary text-sm truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{group.name}</h3>
                   <span className="flex-shrink-0">
                     {group.isPrivate
-                      ? <FaLock className="text-slate-300 text-[10px]" />
-                      : <FaGlobe className="text-slate-300 text-[10px]" />
+                      ? <FaLock className="text-theme-muted text-[10px]" />
+                      : <FaGlobe className="text-theme-muted text-[10px]" />
                     }
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 truncate mt-0.5">{group.description || "No description"}</p>
+                <p className="text-xs text-theme-muted truncate mt-0.5">{group.description || "No description"}</p>
               </div>
-              <div className="text-slate-300 group-hover:text-blue-400 transition text-lg">›</div>
+              <div className="text-theme-muted group-hover:text-blue-400 transition text-lg">›</div>
             </li>
           ))}
         </ul>
@@ -204,16 +204,16 @@ const GroupList = () => {
               <input type="text" name="name" value={groupData.name} onChange={handleChange} placeholder="e.g. DSA Study Circle" className={inputCls} required />
             </div>
             <div>
-              <label className={labelCls}>Description <span className="text-slate-300">(optional)</span></label>
+              <label className={labelCls}>Description <span className="text-theme-muted">(optional)</span></label>
               <textarea name="description" value={groupData.description} onChange={handleChange} placeholder="What's this group about?" className={inputCls} rows={3} />
             </div>
             <label className="flex items-center gap-3 cursor-pointer">
               <div className="relative">
                 <input type="checkbox" name="isPrivate" checked={groupData.isPrivate} onChange={handleChange} className="sr-only peer" />
-                <div className="w-10 h-5 bg-slate-200 rounded-full peer-checked:bg-blue-600 transition-colors" />
-                <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
+                <div className="w-10 h-5 bg-theme-border dark:bg-slate-700 rounded-full peer-checked:bg-blue-600 transition-colors" />
+                <div className="absolute top-0.5 left-0.5 w-4 h-4 bg-surface rounded-full shadow transition-transform peer-checked:translate-x-5" />
               </div>
-              <span className="text-sm text-slate-700 font-medium">Private Group</span>
+              <span className="text-sm text-theme-secondary font-medium">Private Group</span>
             </label>
             <button type="submit" className="w-full py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
               Create Group

@@ -126,12 +126,12 @@ const GroupSettingsPage = () => {
     }
   };
 
-  const inputCls = "w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition bg-white";
+  const inputCls = "w-full px-4 py-2.5 rounded-xl border border-theme text-theme-primary text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition bg-surface";
 
   return (
     <main className="flex flex-1 relative h-full">
       <ToastContainer position="top-right" theme="light" />
-      <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 flex flex-col max-h-[87vh] overflow-y-auto">
+      <div className="flex-1 bg-surface rounded-3xl shadow-sm border border-theme flex flex-col max-h-[87vh] overflow-y-auto">
 
         {/* Top banner */}
         <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-t-3xl px-8 py-8 text-white">
@@ -170,11 +170,11 @@ const GroupSettingsPage = () => {
 
         <div className="px-8 py-6 space-y-6">
           {/* Description */}
-          <div className="bg-slate-50 rounded-2xl p-4">
+          <div className="bg-surface-2 rounded-2xl p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Description</h3>
+              <h3 className="text-xs font-semibold text-theme-muted uppercase tracking-wider">Description</h3>
               {isAdmin && !isEditingDescription && (
-                <button onClick={() => setIsEditingDescription(true)} className="text-slate-400 hover:text-blue-500 transition">
+                <button onClick={() => setIsEditingDescription(true)} className="text-theme-muted hover:text-blue-500 transition">
                   <FiEdit2 className="text-sm" />
                 </button>
               )}
@@ -184,20 +184,20 @@ const GroupSettingsPage = () => {
                 <textarea value={newGroupDescription} onChange={(e) => setNewGroupDescription(e.target.value)} rows={3} className={inputCls + " resize-none"} />
                 <div className="flex gap-2">
                   <button onClick={handleSaveDescription} className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition">Save</button>
-                  <button onClick={() => setIsEditingDescription(false)} className="text-xs bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-300 transition">Cancel</button>
+                  <button onClick={() => setIsEditingDescription(false)} className="text-xs bg-theme-border text-theme-secondary px-3 py-1.5 rounded-lg hover:bg-slate-300 transition">Cancel</button>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-slate-600">{groupInfo.description || <span className="italic text-slate-400">No description set</span>}</p>
+              <p className="text-sm text-theme-secondary">{groupInfo.description || <span className="italic text-theme-muted">No description set</span>}</p>
             )}
           </div>
 
           {/* Group Code (admin only) */}
           {isAdmin && (
-            <div className="bg-slate-50 rounded-2xl p-4">
-              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Invite Code</h3>
+            <div className="bg-surface-2 rounded-2xl p-4">
+              <h3 className="text-xs font-semibold text-theme-muted uppercase tracking-wider mb-3">Invite Code</h3>
               <div className="flex items-center gap-3">
-                <code className="flex-1 font-mono text-slate-800 bg-white border border-slate-200 px-4 py-2.5 rounded-xl text-sm tracking-widest">
+                <code className="flex-1 font-mono text-theme-primary bg-surface border border-theme px-4 py-2.5 rounded-xl text-sm tracking-widest">
                   {groupInfo.groupCode}
                 </code>
                 <button onClick={handleCopyCode} className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition ${copied ? "bg-green-500 text-white" : "bg-blue-600 text-white hover:bg-blue-700"}`}>
@@ -211,13 +211,13 @@ const GroupSettingsPage = () => {
           {/* Members */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <FiUsers className="text-slate-400" />
-              <h3 className="text-sm font-bold text-slate-700">Members</h3>
-              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{members.length}</span>
+              <FiUsers className="text-theme-muted" />
+              <h3 className="text-sm font-bold text-theme-primary">Members</h3>
+              <span className="text-xs text-theme-muted bg-surface-2 px-2 py-0.5 rounded-full">{members.length}</span>
             </div>
             <ul className="space-y-2">
               {members.map((member) => (
-                <li key={member._id} className="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 transition">
+                <li key={member._id} className="flex items-center justify-between p-3 rounded-2xl hover:bg-surface-2 transition">
                   <div className="flex items-center gap-3 relative">
                     <div className="relative">
                       {member.profilePicture ? (
@@ -230,8 +230,8 @@ const GroupSettingsPage = () => {
                       )}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-slate-800">{member.name}</p>
-                      <p className="text-xs text-slate-400 truncate max-w-[180px]">{member.email}</p>
+                      <p className="text-sm font-semibold text-theme-primary">{member.name}</p>
+                      <p className="text-xs text-theme-muted truncate max-w-[180px]">{member.email}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -243,7 +243,7 @@ const GroupSettingsPage = () => {
                       isAdmin && (
                         <button
                           onClick={() => setConfirm({ type: "remove", memberId: member._id })}
-                          className="w-7 h-7 rounded-lg bg-slate-100 text-slate-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition"
+                          className="w-7 h-7 rounded-lg bg-surface-2 text-theme-muted hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition"
                         >
                           <FiX className="text-sm" />
                         </button>

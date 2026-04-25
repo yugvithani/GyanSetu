@@ -34,7 +34,7 @@
 //       </div>
 
 //       {/* Main Container (Fixed Height) */}
-//       <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
+//       <div className="flex-1 bg-surface rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
 //         {/* Toggle Buttons */}
 //         <div className="flex space-x-6 p-2 bg-gray-200 rounded-full mx-auto w-max">
 //           <button

@@ -16,26 +16,26 @@ const ConfirmModal = ({
 }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-[100] animate-fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-slide-up">
+      <div className="bg-surface rounded-3xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden animate-slide-up border border-theme">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-theme">
           <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${danger ? "bg-red-50" : "bg-amber-50"}`}>
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${danger ? "bg-red-500/10" : "bg-amber-500/10"}`}>
               <FiAlertTriangle className={`text-lg ${danger ? "text-red-500" : "text-amber-500"}`} />
             </div>
-            <h3 className="font-bold text-slate-800 text-base">{title}</h3>
+            <h3 className="font-bold text-theme-primary text-base">{title}</h3>
           </div>
           <button
             onClick={onCancel}
-            className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition"
+            className="w-8 h-8 rounded-xl bg-surface hover:opacity-80 flex items-center justify-center transition border border-theme"
           >
-            <FiX className="text-slate-500 text-sm" />
+            <FiX className="text-theme-muted text-sm" />
           </button>
         </div>
 
         {/* Body */}
         <div className="px-6 py-5">
-          <p className="text-slate-500 text-sm leading-relaxed">{message}</p>
+          <p className="text-theme-secondary text-sm leading-relaxed">{message}</p>
         </div>
 
         {/* Actions */}
@@ -43,7 +43,7 @@ const ConfirmModal = ({
           <button
             onClick={onCancel}
             disabled={loading}
-            className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition disabled:opacity-50"
+            className="flex-1 py-2.5 rounded-xl bg-surface border border-theme text-theme-secondary text-sm font-medium hover:opacity-80 transition disabled:opacity-50"
           >
             Cancel
           </button>
@@ -53,7 +53,7 @@ const ConfirmModal = ({
             className={`flex-1 py-2.5 rounded-xl text-white text-sm font-semibold transition disabled:opacity-50 active:scale-[0.98]
               ${danger
                 ? "bg-red-500 hover:bg-red-600 shadow-sm shadow-red-500/20"
-                : "bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-500/20"
+                : "bg-theme-primary hover:opacity-90"
               }`}
           >
             {loading ? "Please wait..." : confirmLabel}

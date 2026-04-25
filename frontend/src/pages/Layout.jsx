@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
 import UserProfile from "./UserProfile";
+import ThemeToggle from "../components/ThemeToggle";
 
 const Layout = ({ children }) => {
   return (
-    <div className="min-h-screen flex bg-slate-100 relative overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-100/60" />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/10 rounded-full blur-3xl" />
+    <div className="min-h-screen flex bg-page relative overflow-hidden transition-colors duration-300">
+      {/* Gradient orbs */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400/10 dark:bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/10 dark:bg-indigo-500/5 rounded-full blur-3xl" />
       </div>
 
       <SideBar />
@@ -22,7 +22,10 @@ const Layout = ({ children }) => {
           <div className="flex-1">
             <SearchBar />
           </div>
-          <UserProfile />
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <ThemeToggle />
+            <UserProfile />
+          </div>
         </header>
 
         {/* Page content */}

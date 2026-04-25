@@ -2,7 +2,63 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design Tokens ──────────────────────────────────────────────────── */
 @layer base {
+  /* Light mode variables (default) */
+  :root {
+    --color-bg:                #f1f5f9;       /* page background */
+    --color-bg-grad-from:      #f8fafc;
+    --color-bg-grad-via:       rgba(219,234,254,0.4);
+    --color-bg-grad-to:        rgba(199,210,254,0.6);
+
+    --color-surface:           #ffffff;       /* card / panel bg */
+    --color-surface-secondary: #f8fafc;       /* subtle inner surfaces */
+    --color-border:            #e2e8f0;       /* border */
+
+    --color-text-primary:      #1e293b;       /* headings */
+    --color-text-secondary:    #475569;       /* body text */
+    --color-text-muted:        #94a3b8;       /* placeholders */
+
+    --color-sidebar-bg:        rgba(255,255,255,0.95);
+    --color-sidebar-border:    rgba(0,0,0,0.05);
+
+    --color-input-bg:          #ffffff;
+    --color-input-border:      #e2e8f0;
+
+    --scrollbar-thumb:         #93c5fd;
+    --scrollbar-track:         #f1f5f9;
+
+    --color-modal-overlay:     rgba(15,23,42,0.55);
+  }
+
+  /* Dark mode variables */
+  .dark {
+    --color-bg:                #0f172a;
+    --color-bg-grad-from:      #0f172a;
+    --color-bg-grad-via:       rgba(30,41,59,0.8);
+    --color-bg-grad-to:        rgba(15,23,42,1);
+
+    --color-surface:           #1e293b;
+    --color-surface-secondary: #0f172a;
+    --color-border:            #334155;
+
+    --color-text-primary:      #f1f5f9;
+    --color-text-secondary:    #cbd5e1;
+    --color-text-muted:        #64748b;
+
+    --color-sidebar-bg:        rgba(2,6,23,0.98);
+    --color-sidebar-border:    rgba(255,255,255,0.04);
+
+    --color-input-bg:          #1e293b;
+    --color-input-border:      #334155;
+
+    --scrollbar-thumb:         #334155;
+    --scrollbar-track:         #1e293b;
+
+    --color-modal-overlay:     rgba(0,0,0,0.7);
+  }
+
+  /* ─── Base Resets ──────── */
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -11,30 +67,62 @@
 
   body {
     font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: #93c5fd #f1f5f9;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
   }
 
-  *::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-  }
-
-  *::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 10px;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background: #93c5fd;
-    border-radius: 10px;
-  }
-
-  *::-webkit-scrollbar-thumb:hover {
-    background: #3b82f6;
-  }
+  *::-webkit-scrollbar       { width: 5px; height: 5px; }
+  *::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 10px; }
+  *::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 10px; }
+  *::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
 }
 
+/* ─── Utility Classes ────────────────────────────────────────────────── */
+@layer utilities {
+  /* Surface helpers */
+  .bg-surface        { background-color: var(--color-surface); }
+  .bg-surface-2      { background-color: var(--color-surface-secondary); }
+  .bg-theme-border   { background-color: var(--color-border); }
+  .border-theme      { border-color: var(--color-border); }
+
+  /* Text helpers */
+  .text-theme-primary   { color: var(--color-text-primary); }
+  .text-theme-secondary { color: var(--color-text-secondary); }
+  .text-theme-muted     { color: var(--color-text-muted); }
+
+  /* Page background gradient */
+  .bg-page {
+    background-color: var(--color-bg);
+    background-image: linear-gradient(
+      135deg,
+      var(--color-bg-grad-from),
+      var(--color-bg-grad-via),
+      var(--color-bg-grad-to)
+    );
+  }
+
+  /* Input theme */
+  .input-theme {
+    background-color: var(--color-input-bg);
+    border-color: var(--color-input-border);
+    color: var(--color-text-primary);
+  }
+  .input-theme::placeholder { color: var(--color-text-muted); }
+
+  /* Sidebar */
+  .sidebar-theme {
+    background-color: var(--color-sidebar-bg);
+    border-color: var(--color-sidebar-border);
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    background-color: var(--color-modal-overlay);
+  }
+}

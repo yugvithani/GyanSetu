@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  darkMode: "class", // Enable class-based dark mode
   theme: {
     extend: {
       fontFamily: {
@@ -21,18 +22,29 @@ module.exports = {
           800: "#112f92",
           900: "#142c74",
         },
+        // Semantic surface tokens backed by CSS vars
+        surface: {
+          DEFAULT: "var(--color-surface)",
+          secondary: "var(--color-surface-secondary)",
+          border: "var(--color-border)",
+        },
+        text: {
+          primary:   "var(--color-text-primary)",
+          secondary: "var(--color-text-secondary)",
+          muted:     "var(--color-text-muted)",
+        },
       },
       animation: {
-        "fade-in": "fadeIn 0.2s ease-out",
+        "fade-in":  "fadeIn 0.2s ease-out",
         "slide-up": "slideUp 0.25s ease-out",
       },
       keyframes: {
         fadeIn: {
-          "0%": { opacity: 0 },
+          "0%":   { opacity: 0 },
           "100%": { opacity: 1 },
         },
         slideUp: {
-          "0%": { opacity: 0, transform: "translateY(12px)" },
+          "0%":   { opacity: 0, transform: "translateY(12px)" },
           "100%": { opacity: 1, transform: "translateY(0)" },
         },
       },

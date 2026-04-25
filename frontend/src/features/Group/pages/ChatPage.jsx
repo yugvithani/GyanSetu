@@ -197,24 +197,24 @@ const ChatPage = () => {
 
   return (
     <main className="flex flex-1 relative h-full">
-      <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 flex flex-col max-h-[87vh] overflow-hidden">
+      <div className="flex-1 bg-surface rounded-3xl shadow-sm border border-theme flex flex-col max-h-[87vh] overflow-hidden">
 
         {/* Chat header */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-100 bg-white rounded-t-3xl flex-shrink-0">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-theme bg-surface rounded-t-3xl flex-shrink-0">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
             <FiMessageSquare className="text-white text-sm" />
           </div>
           <div>
-            <h2 className="font-bold text-slate-800 text-sm leading-tight">{groupName || "Group Chat"}</h2>
-            <p className="text-xs text-slate-400">Group chat</p>
+            <h2 className="font-bold text-theme-primary text-sm leading-tight">{groupName || "Group Chat"}</h2>
+            <p className="text-xs text-theme-muted">Group chat</p>
           </div>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 bg-slate-50/50" onScroll={handleScroll}>
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 bg-surface-2/50" onScroll={handleScroll}>
           {loadingMore && (
               <div className="flex justify-center py-2">
-                 <div className="w-5 h-5 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin"></div>
+                 <div className="w-5 h-5 border-2 border-theme border-t-blue-500 rounded-full animate-spin"></div>
               </div>
           )}
           
@@ -224,8 +224,8 @@ const ChatPage = () => {
                 <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-3">
                   <FiMessageSquare className="text-blue-300 text-xl" />
                 </div>
-                <p className="text-slate-400 text-sm font-medium">No messages yet</p>
-                <p className="text-slate-300 text-xs mt-1">Be the first to say something!</p>
+                <p className="text-theme-muted text-sm font-medium">No messages yet</p>
+                <p className="text-theme-muted text-xs mt-1">Be the first to say something!</p>
               </div>
             </div>
           ) : (
@@ -233,11 +233,11 @@ const ChatPage = () => {
               if (item.type === "separator") {
                 return (
                   <div key={`sep-${index}`} className="flex items-center gap-3 my-3">
-                    <div className="flex-1 h-px bg-slate-200" />
-                    <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1 rounded-full font-medium">
+                    <div className="flex-1 h-px bg-theme-border" />
+                    <span className="text-xs text-theme-muted bg-surface-2 px-3 py-1 rounded-full font-medium">
                       {formatDate(item.date)}
                     </span>
-                    <div className="flex-1 h-px bg-slate-200" />
+                    <div className="flex-1 h-px bg-theme-border" />
                   </div>
                 );
               }
@@ -247,7 +247,7 @@ const ChatPage = () => {
               if (msg.type === "system") {
                   return (
                       <div key={index} className="flex justify-center my-3">
-                        <span className="text-[11px] text-slate-400 bg-slate-100/50 px-4 py-1.5 rounded-full font-medium border border-slate-100 flex items-center gap-1.5">
+                        <span className="text-[11px] text-theme-muted bg-surface-2/50 px-4 py-1.5 rounded-full font-medium border border-theme flex items-center gap-1.5">
                           {msg.content}
                         </span>
                       </div>
@@ -270,10 +270,10 @@ const ChatPage = () => {
                   <div className={`max-w-[65%] rounded-2xl px-4 py-3 shadow-sm transition-transform hover:scale-[1.01]
                     ${isSentByUser
                       ? "bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-br-sm"
-                      : "bg-white text-slate-800 border border-slate-100 rounded-bl-sm"
+                      : "bg-surface text-theme-primary border border-theme rounded-bl-sm"
                     }`}
                   >
-                    <p className={`text-[11px] font-semibold mb-1.5 ${isSentByUser ? "text-blue-200" : "text-slate-400"}`}>
+                    <p className={`text-[11px] font-semibold mb-1.5 ${isSentByUser ? "text-blue-200" : "text-theme-muted"}`}>
                       {displayName}
                     </p>
 
@@ -297,7 +297,7 @@ const ChatPage = () => {
                     )}
 
                     {msg.createdAt && (
-                      <p className={`text-[10px] mt-1.5 text-right ${isSentByUser ? "text-blue-200/70" : "text-slate-400"}`}>
+                      <p className={`text-[10px] mt-1.5 text-right ${isSentByUser ? "text-blue-200/70" : "text-theme-muted"}`}>
                         {formatTime(msg.createdAt)}
                       </p>
                     )}
@@ -309,7 +309,7 @@ const ChatPage = () => {
           
           {typingUsers.size > 0 && (
              <div className="flex justify-start mb-1 animate-fade-in pl-2">
-                <div className="bg-white text-slate-500 border border-slate-100 px-4 py-2 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-2">
+                <div className="bg-surface text-theme-muted border border-theme px-4 py-2 rounded-2xl rounded-bl-sm shadow-sm flex items-center gap-2">
                    <div className="flex gap-1">
                       <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                       <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
@@ -326,14 +326,14 @@ const ChatPage = () => {
         </div>
 
         {/* Input bar */}
-        <div className="flex items-center gap-3 px-4 py-3 border-t border-slate-100 bg-white rounded-b-3xl flex-shrink-0">
+        <div className="flex items-center gap-3 px-4 py-3 border-t border-theme bg-surface rounded-b-3xl flex-shrink-0">
           <AttachmentButton sendMessage={sendMessage} socket={socket} userId={userId} groupId={groupId} />
           <input
             type="text"
             value={newMessage}
             onChange={handleTyping}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
-            className="flex-1 px-4 py-2.5 bg-slate-100 rounded-2xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition"
+            className="flex-1 px-4 py-2.5 bg-surface-2 rounded-2xl text-sm text-theme-primary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition"
             placeholder="Type a message..."
           />
           <button

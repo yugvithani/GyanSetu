@@ -48,7 +48,7 @@ const SessionPage = () => {
       
 
       {/* Main Container (Fixed Height) */}
-      <div className="flex-1 bg-white rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
+      <div className="flex-1 bg-surface rounded-2xl shadow-md p-6 flex flex-col max-h-[87vh]">
         {/* Toggle Buttons */}
        
 
@@ -61,7 +61,7 @@ const SessionPage = () => {
           filteredSessions.map((session) => (
             <div
               key={session._id}
-              className="p-4 bg-white rounded-lg shadow-lg flex flex-col justify-between h-44 hover:shadow-xl transition-shadow"
+              className="p-4 bg-surface rounded-lg shadow-lg flex flex-col justify-between h-44 hover:shadow-xl transition-shadow"
             >
               <div className="flex items-center space-x-3">
                 <HiVideoCamera className="text-blue-600 text-3xl" />

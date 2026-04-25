@@ -19,15 +19,15 @@ const fileTypeColor = (name) => {
 };
 
 const SkeletonCard = () => (
-  <div className="bg-white rounded-2xl p-4 border border-slate-100 animate-pulse space-y-3">
+  <div className="bg-surface rounded-2xl p-4 border border-theme animate-pulse space-y-3">
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 rounded-xl bg-slate-200" />
+      <div className="w-10 h-10 rounded-xl bg-theme-border" />
       <div className="flex-1 space-y-2">
-        <div className="h-3 bg-slate-200 rounded w-2/3" />
-        <div className="h-2.5 bg-slate-100 rounded w-1/2" />
+        <div className="h-3 bg-theme-border rounded w-2/3" />
+        <div className="h-2.5 bg-surface-2 rounded w-1/2" />
       </div>
     </div>
-    <div className="h-2 bg-slate-100 rounded w-1/3" />
+    <div className="h-2 bg-surface-2 rounded w-1/3" />
   </div>
 );
 
@@ -99,31 +99,31 @@ const MaterialPage = () => {
   return (
     <main className="flex flex-1 relative h-full">
       <ToastContainer position="top-right" theme="light" />
-      <div className="flex-1 bg-white rounded-3xl shadow-sm border border-slate-100 flex flex-col max-h-[87vh] overflow-hidden">
+      <div className="flex-1 bg-surface rounded-3xl shadow-sm border border-theme flex flex-col max-h-[87vh] overflow-hidden">
 
         {/* Header */}
-        <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-theme flex-shrink-0">
           <div>
-            <h2 className="text-lg font-bold text-slate-800">Materials</h2>
-            <p className="text-xs text-slate-400 mt-0.5">{filteredMaterials.length} file{filteredMaterials.length !== 1 ? "s" : ""}</p>
+            <h2 className="text-lg font-bold text-theme-primary">Materials</h2>
+            <p className="text-xs text-theme-muted mt-0.5">{filteredMaterials.length} file{filteredMaterials.length !== 1 ? "s" : ""}</p>
           </div>
           <div className="flex items-center gap-3">
             {/* Search */}
             <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-muted text-sm" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search files..."
-                className="pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition w-44"
+                className="pl-9 pr-4 py-2 rounded-xl border border-theme text-sm text-theme-primary focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition w-44"
               />
             </div>
             {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2 rounded-xl border border-slate-200 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition bg-white"
+              className="px-3 py-2 rounded-xl border border-theme text-sm text-theme-secondary focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition bg-surface"
             >
               <option value="latest">Newest first</option>
               <option value="oldest">Oldest first</option>
@@ -139,11 +139,11 @@ const MaterialPage = () => {
             </div>
           ) : filteredMaterials.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mb-4">
-                <FiInbox className="text-slate-300 text-2xl" />
+              <div className="w-16 h-16 rounded-2xl bg-surface-2 flex items-center justify-center mb-4">
+                <FiInbox className="text-theme-muted text-2xl" />
               </div>
-              <p className="text-slate-500 font-semibold text-sm">No materials found</p>
-              <p className="text-slate-400 text-xs mt-1">
+              <p className="text-theme-muted font-semibold text-sm">No materials found</p>
+              <p className="text-theme-muted text-xs mt-1">
                 {searchQuery ? "Try a different search term" : "Files shared in chat will appear here"}
               </p>
             </div>
@@ -152,7 +152,7 @@ const MaterialPage = () => {
               {filteredMaterials.map((material) => (
                 <div
                   key={material._id}
-                  className="bg-white rounded-2xl border border-slate-100 p-4 hover:border-blue-200 hover:shadow-md transition-all duration-150 group flex flex-col gap-3"
+                  className="bg-surface rounded-2xl border border-theme p-4 hover:border-blue-200 hover:shadow-md transition-all duration-150 group flex flex-col gap-3"
                 >
                   {/* File icon + name */}
                   <div className="flex items-center gap-3">
@@ -160,22 +160,22 @@ const MaterialPage = () => {
                       <HiDocumentText className="text-white text-lg" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-800 truncate">
+                      <p className="text-sm font-semibold text-theme-primary truncate">
                         {truncateText(material.name || "Unnamed File", 28)}
                       </p>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-xs text-theme-muted mt-0.5">
                         by {material.senderName || "Unknown"}
                       </p>
                     </div>
                   </div>
 
                   {/* Date */}
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-theme-muted">
                     {material.createdAt ? new Date(material.createdAt).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) : "Unknown date"}
                   </p>
 
                   {/* Actions */}
-                  <div className="flex items-center justify-between mt-auto pt-1 border-t border-slate-50">
+                  <div className="flex items-center justify-between mt-auto pt-1 border-t border-theme">
                     {material.fileUrl ? (
                       <a
                         href={material.fileUrl}
@@ -186,12 +186,12 @@ const MaterialPage = () => {
                         <FiDownload className="text-sm" /> View / Download
                       </a>
                     ) : (
-                      <span className="text-slate-400 text-xs">No file available</span>
+                      <span className="text-theme-muted text-xs">No file available</span>
                     )}
                     {isAdmin && (
                       <button
                         onClick={() => setDeleteTarget(material._id)}
-                        className="w-7 h-7 rounded-lg bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition opacity-0 group-hover:opacity-100"
+                        className="w-7 h-7 rounded-lg bg-surface-2 text-theme-muted hover:bg-red-50 hover:text-red-500 flex items-center justify-center transition opacity-0 group-hover:opacity-100"
                       >
                         <FiTrash2 className="text-sm" />
                       </button>

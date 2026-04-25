@@ -111,7 +111,7 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute bottom-[160%] left-1/2 transform -translate-x-1/2 flex gap-3 bg-white p-3 rounded-xl shadow-lg border border-gray-300"
+            className="absolute bottom-[160%] left-1/2 transform -translate-x-1/2 flex gap-3 bg-surface p-3 rounded-xl shadow-lg border border-theme"
           >
             {[
               { icon: <FaImage size={18} />, label: "Image", type: "image" },
@@ -161,11 +161,11 @@ const AttachmentButton = ({ sendMessage, socket, userId, groupId }) => {
       {/* Popup for creating a meeting (Study Session) */}
       {showSessionPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white rounded-lg p-6 w-80">
-            <p className="text-lg mb-4">Do you want create a meeting?</p>
+          <div className="bg-surface border border-theme rounded-lg p-6 w-80">
+            <p className="text-lg mb-4 text-theme-primary">Do you want create a meeting?</p>
             <div className="flex justify-end space-x-4">
               <button
-                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-surface-2 text-theme-secondary rounded hover:bg-theme-border"
                 onClick={() => setShowSessionPopup(false)}
                 disabled={loading}
               >

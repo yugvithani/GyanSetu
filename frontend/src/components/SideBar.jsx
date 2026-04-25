@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FiHome, FiSettings, FiMessageSquare, FiFileText, FiVideo, FiCheckSquare, FiPenTool } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import ThemeToggle from "./ThemeToggle";
 
 const SideBar = () => {
     const navigate = useNavigate();
@@ -42,7 +43,7 @@ const SideBar = () => {
                 <div className={`text-xl p-3 rounded-2xl transition-all duration-200 flex items-center justify-center
                     ${active
                         ? "bg-blue-600 text-white shadow-lg shadow-blue-500/40"
-                        : "text-slate-400 hover:bg-white/10 hover:text-white"
+                        : "text-theme-muted hover:bg-surface-2 hover:text-theme-primary"
                     }`}
                 >
                     {icon}
@@ -50,8 +51,7 @@ const SideBar = () => {
                         <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-blue-400 rounded-r-full -ml-3" />
                     )}
                 </div>
-                {/* Tooltip */}
-                <span className="absolute left-14 top-1/2 -translate-y-1/2 px-2.5 py-1 text-xs font-medium bg-slate-800 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap shadow-lg z-50 border border-white/10">
+                <span className="absolute left-14 top-1/2 -translate-y-1/2 px-2.5 py-1 text-xs font-medium bg-surface text-theme-primary rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap shadow-lg z-50 border border-theme">
                     {label}
                 </span>
             </div>
@@ -72,21 +72,21 @@ const SideBar = () => {
     };
 
     return (
-        <aside className="w-16 flex flex-col items-center py-8 gap-2 bg-slate-900/95 backdrop-blur-md shadow-xl rounded-r-3xl my-4 ml-2 border border-white/5">
+        <aside className="sidebar-theme w-16 flex flex-col items-center py-8 gap-2 backdrop-blur-md shadow-xl rounded-r-3xl my-4 ml-2 border">
             {/* Brand dot */}
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
                 <span className="text-white text-xs font-bold">G</span>
             </div>
 
             {/* Divider */}
-            <div className="w-6 h-px bg-white/10 mb-2" />
+            <div className="w-6 h-px bg-theme-border/10 mb-2" />
 
             <NavBtn icon={homeItem.icon} label={homeItem.label} path={homeItem.path} />
 
             <AnimatePresence>
                 {showGroupMenu && (
                     <>
-                        <div className="w-6 h-px bg-white/10 my-1" />
+                        <div className="w-6 h-px bg-theme-border/10 my-1" />
                         {groupMenuItems.map((item, index) => (
                             <NavBtn
                                 key={item.path}
@@ -100,6 +100,11 @@ const SideBar = () => {
                     </>
                 )}
             </AnimatePresence>
+
+            {/* Spacer + compact theme toggle at the bottom */}
+            <div className="flex-1" />
+            <div className="w-6 h-px bg-theme-border/10 mb-1" />
+            <ThemeToggle compact />
         </aside>
     );
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../src/features/Auth/pages/Login";
 import Register from "../src/features/Auth/pages/Register";
@@ -17,6 +18,7 @@ import NotFound from "./pages/NotFound";
 
 const App = () => {
   return (
+    <ThemeProvider>
     <GroupProvider>
     <Router>
       <ActivityProvider>
@@ -39,6 +41,7 @@ const App = () => {
       </ActivityProvider>
     </Router>
     </GroupProvider>
+    </ThemeProvider>
   );
 };
 
